@@ -398,18 +398,18 @@ export default function GeneradorTab({ idEstacion, userRole }) {
             color="text.secondary"
             sx={{ mb: 3, fontWeight: "medium" }}
           >
-            No hay Generadores registrados en esta estación.
+            No hay Generadores registrados en esta estación de bombeo.
           </Typography>
 
           {(userRole === "admin" || userRole === "supervisor") && (
             <Button
               variant="contained"
-              color="success"
+              color="primary"
               startIcon={<AddIcon />}
               onClick={() => handleOpenGenerador()} // 👈 Ahora sí va a funcionar al 100%
               sx={{ fontWeight: "bold", textTransform: "none", px: 3 }}
             >
-              Registrar Primer Generador
+              REGISTRAR PRIMER GENERADOR
             </Button>
           )}
         </Box>
@@ -421,12 +421,12 @@ export default function GeneradorTab({ idEstacion, userRole }) {
             <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
               <Button
                 variant="contained"
-                color="success"
+                color="primary"
                 startIcon={<AddIcon />}
                 onClick={() => handleOpenGenerador()}
                 sx={{ fontWeight: "bold" }}
               >
-                Registrar Generador
+                REGISTRAR GENERADOR
               </Button>
             </Box>
           )}

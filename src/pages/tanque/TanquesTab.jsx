@@ -112,27 +112,6 @@ export default function TanquesTab({ idEstacion, userRole }) {
     );
   }
 
-  // Vista cuando la lista está vacía
-  if (!tanquesList || tanquesList.length === 0) {
-    return (
-      <Box
-        sx={{
-          textAlign: "center",
-          p: 5,
-          bgcolor: "#f8fafc",
-          borderRadius: 2,
-          border: "1px dashed #cbd5e1",
-          mt: 2,
-        }}
-      >
-        <Typography color="text.secondary" sx={{ fontWeight: "medium" }}>
-          No hay Tanques de combustible registrados en esta estación de bombeo.
-        </Typography>
-        {/* Aquí inyectaremos el botón de registrar en el paso 2 */}
-      </Box>
-    );
-  }
-
   return (
     <Box sx={{ mt: 2 }}>
       {/* ❌ CASO A: LISTA VACÍA */}

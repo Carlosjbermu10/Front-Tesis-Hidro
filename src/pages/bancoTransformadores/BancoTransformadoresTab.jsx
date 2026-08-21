@@ -21,6 +21,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
+import AddIcon from "@mui/icons-material/Add";
 
 import Swal from "sweetalert2";
 import { transformadorService } from "../../services/transformadorService";
@@ -218,298 +219,336 @@ export default function BancoTransformadoresTab({ idEstacion, userRole }) {
   }
 
   return (
-    <Box sx={{ p: 2 }}>
+    <Box sx={{ p: 0 }}>
       {/* Cabecera */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 3,
-        }}
-      >
-        <Typography
-          variant="h6"
-          fontWeight="bold"
-          color="text.primary"
-          sx={{ display: "flex", alignItems: "center", gap: 1 }}
-        >
-          <FlashOnIcon color="warning" /> Bancos de Transformadores
-        </Typography>
-        {(userRole === "admin" || userRole === "supervisor") && (
-          <Button
-            variant="contained"
-            color="primary"
-            size="small"
-            onClick={() => {
-              setModalModo("add");
-              setSeleccionado(null);
-              setModalOpen(true);
-            }}
-          >
-            + Añadir Banco
-          </Button>
-        )}
-      </Box>
 
       {items.length === 0 ? (
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          sx={{ textAlign: "center", mt: 4, fontStyle: "italic" }}
+        <Box
+          sx={{
+            textAlign: "center",
+            p: 5,
+            bgcolor: "#f8fafc",
+            borderRadius: 2,
+            border: "1px dashed #cbd5e1",
+            mt: 2,
+          }}
         >
-          No hay bancos de transformadores registrados en esta estación de
-          bombeo.
-        </Typography>
-      ) : (
-        <Grid container spacing={3}>
-          {items.map((item) => (
-            <Grid item xs={12} key={item.id_banco_transformadores}>
-              <Card
-                sx={{
-                  borderLeft: "5px solid #eab308",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-                }}
-              >
-                <CardContent sx={{ p: 3 }}>
-                  {/* Fila Encabezado */}
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      mb: 2,
-                    }}
-                  >
-                    <Box>
-                      <Typography
-                        variant="h6"
-                        fontWeight="bold"
-                        color="primary.dark"
-                      >
-                        {item.tipo} — {item.marca || "Sin Marca"}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        Año de instalación: <b>{item.año || "N/A"}</b> |
-                        Fabricado en: <b>{item.lugar_fabricado || "N/A"}</b>
-                      </Typography>
-                    </Box>
-                    <Box sx={{ display: "flex", gap: 1 }}>
-                      {/* Botón de cámara (Listo para conectar la galería en el siguiente paso) */}
+          <Typography
+            color="text.secondary"
+            sx={{ mb: 3, fontWeight: "medium" }}
+          >
+            No hay bancos de transformadores registrados en esta estación de
+            bombeo.
+          </Typography>
 
-                      {/* 👁️ Botón de la Cámara (Ver Fotos) */}
-                      {item.fotos_transformador &&
-                        item.fotos_transformador.length > 0 && (
-                          <Button
-                            variant="outlined"
-                            size="small"
+          {(userRole === "admin" || userRole === "supervisor") && (
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<AddIcon />}
+              onClick={() => {
+                setModalModo("add");
+                setSeleccionado(null);
+                setModalOpen(true);
+              }}
+              sx={{ fontWeight: "bold", textTransform: "none", px: 3 }}
+            >
+              REGISTRAR PRIMER BANCOS DE TRANSFORMADORES
+            </Button>
+          )}
+        </Box>
+      ) : (
+        <>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 3,
+            }}
+          >
+            {/* Título */}
+            <Typography
+              variant="h6"
+              fontWeight="bold"
+              color="text.primary"
+              sx={{ display: "flex", alignItems: "center", gap: 1 }}
+            >
+              <FlashOnIcon color="warning" /> Bancos de Transformadores
+            </Typography>
+
+            {/* Botón en la misma línea alineado a la derecha */}
+            {(userRole === "admin" || userRole === "supervisor") && (
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<AddIcon />}
+                onClick={() => {
+                  setModalModo("add");
+                  setSeleccionado(null);
+                  setModalOpen(true);
+                }}
+                sx={{ fontWeight: "bold" }}
+              >
+                REGISTRAR BANCOS DE TRANSFORMADORES
+              </Button>
+            )}
+          </Box>
+          <Grid container spacing={3}>
+            {items.map((item) => (
+              <Grid item xs={12} key={item.id_banco_transformadores}>
+                <Card
+                  sx={{
+                    borderLeft: "5px solid #eab308",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                  }}
+                >
+                  <CardContent sx={{ p: 3 }}>
+                    {/* Fila Encabezado */}
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        mb: 2,
+                      }}
+                    >
+                      <Box>
+                        <Typography
+                          variant="h6"
+                          fontWeight="bold"
+                          color="primary.dark"
+                        >
+                          {item.tipo} — {item.marca || "Sin Marca"}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          Año de instalación: <b>{item.año || "N/A"}</b> |
+                          Fabricado en: <b>{item.lugar_fabricado || "N/A"}</b>
+                        </Typography>
+                      </Box>
+                      <Box sx={{ display: "flex", gap: 1 }}>
+                        {/* Botón de cámara (Listo para conectar la galería en el siguiente paso) */}
+
+                        {/* 👁️ Botón de la Cámara (Ver Fotos) */}
+                        {item.fotos_transformador &&
+                          item.fotos_transformador.length > 0 && (
+                            <Button
+                              variant="outlined"
+                              size="small"
+                              color="primary"
+                              sx={{ fontWeight: "bold" }}
+                              startIcon={<PhotoCameraIcon />}
+                              onClick={(e) => {
+                                e.stopPropagation(); // <-- También puedes ponerlo directo aquí si prefieres
+                                handleAbrirGaleria(
+                                  item.fotos_transformador, // Pasamos el arreglo de fotos
+                                  `Registro Fotográfico: Banco ${item.tipo} - ${item.marca}`, // Título
+                                  e,
+                                );
+                              }}
+                            >
+                              Fotos ({item.fotos_transformador.length})
+                            </Button>
+                          )}
+
+                        {/* 🟢 NUEVO: Botón para Subir Foto (Admin/Supervisor) */}
+                        {(userRole === "admin" ||
+                          userRole === "supervisor") && (
+                          <IconButton
                             color="primary"
-                            sx={{ fontWeight: "bold" }}
-                            startIcon={<PhotoCameraIcon />}
-                            onClick={(e) => {
-                              e.stopPropagation(); // <-- También puedes ponerlo directo aquí si prefieres
-                              handleAbrirGaleria(
-                                item.fotos_transformador, // Pasamos el arreglo de fotos
-                                `Registro Fotográfico: Banco ${item.tipo} - ${item.marca}`, // Título
-                                e,
-                              );
+                            size="small"
+                            component="label"
+                            disabled={subiendoFoto}
+                            sx={{
+                              bgcolor: "#f0fdf4",
+                              color: "#16a34a",
+                              "&:hover": { bgcolor: "#dcfce7" },
                             }}
                           >
-                            Fotos ({item.fotos_transformador.length})
-                          </Button>
+                            <AddAPhotoIcon fontSize="small" />
+                            <input
+                              type="file"
+                              hidden
+                              multiple
+                              accept="image/*"
+                              onChange={(e) =>
+                                handleSubirFoto(
+                                  item.id_banco_transformadores,
+                                  e,
+                                )
+                              }
+                            />
+                          </IconButton>
                         )}
-
-                      {/* 🟢 NUEVO: Botón para Subir Foto (Admin/Supervisor) */}
-                      {(userRole === "admin" || userRole === "supervisor") && (
-                        <IconButton
-                          color="primary"
-                          size="small"
-                          component="label"
-                          disabled={subiendoFoto}
-                          sx={{
-                            bgcolor: "#f0fdf4",
-                            color: "#16a34a",
-                            "&:hover": { bgcolor: "#dcfce7" },
-                          }}
-                        >
-                          <AddAPhotoIcon fontSize="small" />
-                          <input
-                            type="file"
-                            hidden
-                            multiple
-                            accept="image/*"
-                            onChange={(e) =>
-                              handleSubirFoto(item.id_banco_transformadores, e)
+                        {(userRole === "admin" ||
+                          userRole === "supervisor") && (
+                          <IconButton
+                            size="small"
+                            color="info"
+                            onClick={() => {
+                              setSeleccionado(item);
+                              setModalModo("edit");
+                              setModalOpen(true);
+                            }}
+                          >
+                            <EditIcon fontSize="small" />
+                          </IconButton>
+                        )}
+                        {userRole === "admin" && (
+                          <IconButton
+                            size="small"
+                            color="error"
+                            onClick={() =>
+                              handleEliminar(item.id_banco_transformadores)
                             }
-                          />
-                        </IconButton>
-                      )}
-                      {(userRole === "admin" || userRole === "supervisor") && (
-                        <IconButton
-                          size="small"
-                          color="info"
-                          onClick={() => {
-                            setSeleccionado(item);
-                            setModalModo("edit");
-                            setModalOpen(true);
-                          }}
-                        >
-                          <EditIcon fontSize="small" />
-                        </IconButton>
-                      )}
-                      {userRole === "admin" && (
-                        <IconButton
-                          size="small"
-                          color="error"
-                          onClick={() =>
-                            handleEliminar(item.id_banco_transformadores)
-                          }
-                        >
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
-                      )}
+                          >
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        )}
+                      </Box>
                     </Box>
-                  </Box>
 
-                  <Grid container spacing={4}>
-                    {/* Bloque Eléctrico */}
-                    <Grid item xs={12} md={6}>
-                      <Typography
-                        variant="subtitle2"
-                        color="primary"
-                        fontWeight="bold"
-                        sx={{ mb: 1 }}
-                      >
-                        ⚡ Parámetros Eléctricos
-                      </Typography>
-                      <Divider sx={{ mb: 1 }} />
-                      <Grid container spacing={1}>
-                        <Grid item xs={6}>
-                          <Typography variant="body2">
-                            <b>Potencia Nominal:</b> {item.potencia_nominal} KVA
-                          </Typography>
+                    <Grid container spacing={4}>
+                      {/* Bloque Eléctrico */}
+                      <Grid item xs={12} md={6}>
+                        <Typography
+                          variant="subtitle2"
+                          color="primary"
+                          fontWeight="bold"
+                          sx={{ mb: 1 }}
+                        >
+                          ⚡ Parámetros Eléctricos
+                        </Typography>
+                        <Divider sx={{ mb: 1 }} />
+                        <Grid container spacing={1}>
+                          <Grid item xs={6}>
+                            <Typography variant="body2">
+                              <b>Potencia Nominal:</b> {item.potencia_nominal}{" "}
+                              KVA
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="body2">
+                              <b>Nivel Aislamiento:</b> {item.nivel_aislamiento}{" "}
+                              KV
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="body2">
+                              <b>Tensión Primaria:</b> {item.tension_primaria} V
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="body2">
+                              <b>Tensión Secundaria:</b>{" "}
+                              {item.tension_secundaria} V
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="body2">
+                              <b>Corriente Primaria:</b>{" "}
+                              {item.corriente_primaria} A
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="body2">
+                              <b>Frecuencia:</b> {item.frecuencia} Hz
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="body2">
+                              <b>Nº Fases:</b> {item.num_fases}
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="body2">
+                              <b>Impedancia:</b> {item.impedancia_voltios}%
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="body2">
+                              <b>Conexión:</b>{" "}
+                              {obtenerConexionText(item.conexion)}
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="body2">
+                              <b>Tensión C.C.:</b> {item.tension_c_c} V
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={12}>
+                            <Typography variant="body2">
+                              <b>Norma de diseño:</b> {item.norma || "N/A"}
+                            </Typography>
+                          </Grid>
                         </Grid>
-                        <Grid item xs={6}>
-                          <Typography variant="body2">
-                            <b>Nivel Aislamiento:</b> {item.nivel_aislamiento}{" "}
-                            KV
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography variant="body2">
-                            <b>Tensión Primaria:</b> {item.tension_primaria} V
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography variant="body2">
-                            <b>Tensión Secundaria:</b> {item.tension_secundaria}{" "}
-                            V
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography variant="body2">
-                            <b>Corriente Primaria:</b> {item.corriente_primaria}{" "}
-                            A
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography variant="body2">
-                            <b>Frecuencia:</b> {item.frecuencia} Hz
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography variant="body2">
-                            <b>Nº Fases:</b> {item.num_fases}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography variant="body2">
-                            <b>Impedancia:</b> {item.impedancia_voltios}%
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography variant="body2">
-                            <b>Conexión:</b>{" "}
-                            {obtenerConexionText(item.conexion)}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography variant="body2">
-                            <b>Tensión C.C.:</b> {item.tension_c_c} V
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12}>
-                          <Typography variant="body2">
-                            <b>Norma de diseño:</b> {item.norma || "N/A"}
-                          </Typography>
+                      </Grid>
+
+                      {/* Bloque Físico / Entorno */}
+                      <Grid item xs={12} md={6}>
+                        <Typography
+                          variant="subtitle2"
+                          color="primary"
+                          fontWeight="bold"
+                          sx={{ mb: 1 }}
+                        >
+                          📦 Especificaciones Físicas y Térmicas
+                        </Typography>
+                        <Divider sx={{ mb: 1 }} />
+                        <Grid container spacing={1}>
+                          <Grid item xs={6}>
+                            <Typography variant="body2">
+                              <b>Clase Aislamiento:</b>{" "}
+                              {item.clase_aislamiento || "N/A"}
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="body2">
+                              <b>Refrigeración:</b>{" "}
+                              {item.refrigeracion === 1
+                                ? "ONAF (Forzada)"
+                                : "ONAN (Natural)"}
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="body2">
+                              <b>Tipo de Aceite:</b> {item.tipo_aceite || "N/A"}
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="body2">
+                              <b>Volumen Aceite:</b> {item.vol_aceite_total} L
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="body2">
+                              <b>Peso Activo:</b> {item.peso_act} Kg
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="body2">
+                              <b>Peso Total:</b> {item.peso_total} Kg
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="body2">
+                              <b>Elevación Temp.:</b> {item.calentamiento} °C
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="body2">
+                              <b>Temp. Ambiente Máx:</b> {item.temp_ambiente} °C
+                            </Typography>
+                          </Grid>
                         </Grid>
                       </Grid>
                     </Grid>
-
-                    {/* Bloque Físico / Entorno */}
-                    <Grid item xs={12} md={6}>
-                      <Typography
-                        variant="subtitle2"
-                        color="primary"
-                        fontWeight="bold"
-                        sx={{ mb: 1 }}
-                      >
-                        📦 Especificaciones Físicas y Térmicas
-                      </Typography>
-                      <Divider sx={{ mb: 1 }} />
-                      <Grid container spacing={1}>
-                        <Grid item xs={6}>
-                          <Typography variant="body2">
-                            <b>Clase Aislamiento:</b>{" "}
-                            {item.clase_aislamiento || "N/A"}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography variant="body2">
-                            <b>Refrigeración:</b>{" "}
-                            {item.refrigeracion === 1
-                              ? "ONAF (Forzada)"
-                              : "ONAN (Natural)"}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography variant="body2">
-                            <b>Tipo de Aceite:</b> {item.tipo_aceite || "N/A"}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography variant="body2">
-                            <b>Volumen Aceite:</b> {item.vol_aceite_total} L
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography variant="body2">
-                            <b>Peso Activo:</b> {item.peso_act} Kg
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography variant="body2">
-                            <b>Peso Total:</b> {item.peso_total} Kg
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography variant="body2">
-                            <b>Elevación Temp.:</b> {item.calentamiento} °C
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography variant="body2">
-                            <b>Temp. Ambiente Máx:</b> {item.temp_ambiente} °C
-                          </Typography>
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </>
       )}
 
       <ModalTransformador

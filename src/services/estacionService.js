@@ -1,7 +1,7 @@
 import API from "./api";
 
 export const estacionService = {
-  // Obtener todas las estaciones para la tabla principal
+  // Obtener estaciones activas
   getAll: async () => {
     const response = await API.get("/estaciones");
     return response.data;
@@ -31,9 +31,19 @@ export const estacionService = {
     return response.data;
   },
 
-  // 🚀 6. Eliminar una estación (DELETE)
-  delete: async (id) => {
+  // 🚀 6. Deshabilitar una estación (DELETE)
+  deshabilitar: async (id) => {
     const response = await API.delete(`/estacion/delete/${id}`);
+    return response.data;
+  },
+
+  reactivar: async (id) => {
+    const response = await API.patch(`/estacion/reactivar/${id}`);
+    return response.data;
+  },
+
+  getInhabilitadas: async () => {
+    const response = await API.get("/estacion/inactivas");
     return response.data;
   },
 

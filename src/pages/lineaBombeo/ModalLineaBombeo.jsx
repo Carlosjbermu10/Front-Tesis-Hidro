@@ -90,11 +90,27 @@ export default function ModalLineaBombeo({
       onClose();
     } catch (error) {
       console.error("Error en operación:", error);
+      // 1. Extraemos el título y la descripción devueltos por el backend
+      const errorTitle = error.response?.data?.title || "Error en la Solicitud";
+      const errorMessage =
+        error.response?.data?.description ||
+        error.response?.data?.message ||
+        "No se pudo procesar la solicitud. Inténtelo de nuevo.";
+
+      // 2. Desplegamos la alerta de SweetAlert2
       Swal.fire({
         icon: "error",
-        title: "Error",
-        text:
-          error.response?.data?.message || "No se pudo procesar la solicitud.",
+        title: errorTitle,
+        text: errorMessage,
+        confirmButtonColor: "#0284c7",
+        confirmButtonText: "Entendido",
+        // Mantiene la alerta por encima del modal activo
+        didOpen: () => {
+          const swalContainer = document.querySelector(".swal2-container");
+          if (swalContainer) {
+            swalContainer.style.zIndex = "9999";
+          }
+        },
       });
     }
   };

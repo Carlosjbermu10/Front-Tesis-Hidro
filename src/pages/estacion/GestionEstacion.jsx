@@ -24,6 +24,7 @@ import {
 } from "@mui/material";
 import Swal from "sweetalert2";
 import EditIcon from "@mui/icons-material/Edit";
+import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AssignmentIcon from "@mui/icons-material/Assignment";
@@ -450,6 +451,13 @@ const GestionEstacion = () => {
         confirmButtonText: "Corregir datos",
         // 🌟 Obliga a SweetAlert a renderizarse sobre la capa del documento activo
         target: document.body,
+        // Mantiene la alerta por encima del modal activo
+        didOpen: () => {
+          const swalContainer = document.querySelector(".swal2-container");
+          if (swalContainer) {
+            swalContainer.style.zIndex = "9999";
+          }
+        },
       });
     } finally {
       setSubmitting(false);
@@ -529,9 +537,10 @@ const GestionEstacion = () => {
                   sx={{ backgroundColor: "#ffffff" }}
                 />
                 <TextField
-                  label="Municipio"
+                  select
+                  label="municipio"
                   fullWidth
-                  value={detallesFormData.municipio}
+                  value={detallesFormData.municipio || ""}
                   onChange={(e) =>
                     setDetallesFormData({
                       ...detallesFormData,
@@ -540,9 +549,24 @@ const GestionEstacion = () => {
                   }
                   required
                   InputLabelProps={{ shrink: true }}
-                  placeholder="Ej: Península de Macanao"
                   sx={{ backgroundColor: "#ffffff" }}
-                />
+                >
+                  <MenuItem value="Antolín del Campo">
+                    Antolín del Campo
+                  </MenuItem>
+                  <MenuItem value="Arismendi">Arismendi</MenuItem>
+                  <MenuItem value="Díaz">Díaz</MenuItem>
+                  <MenuItem value="García">García</MenuItem>
+                  <MenuItem value="Gómez">Gómez</MenuItem>
+                  <MenuItem value="Maneiro">Maneiro</MenuItem>
+                  <MenuItem value="Marcano">Marcano</MenuItem>
+                  <MenuItem value="Mariño">Mariño</MenuItem>
+                  <MenuItem value="Península de Macanao">
+                    Península de Macanao
+                  </MenuItem>
+                  <MenuItem value="Tubores">Tubores</MenuItem>
+                  <MenuItem value="Villalba">Villalba</MenuItem>
+                </TextField>
               </Box>
 
               <Box sx={{ display: "flex", gap: 2 }}>
@@ -860,28 +884,36 @@ const GestionEstacion = () => {
       {/* PESTAÑA 0: DETALLES TÉCNICOS MAPEADOS */}
       {tabIndex === 0 &&
         (!detalles ? (
-          <Paper
-            elevation={0}
+          <Box
             sx={{
-              p: 4,
-              border: "1px solid #e0e0e0",
-              borderRadius: "8px",
               textAlign: "center",
+              p: 5,
+              bgcolor: "#f8fafc",
+              borderRadius: 2,
+              border: "1px dashed #cbd5e1",
+              mt: 2,
             }}
           >
-            <Alert severity="warning" sx={{ mb: 2, justifyContent: "center" }}>
+            <Typography
+              color="text.secondary"
+              sx={{ mb: 3, fontWeight: "medium" }}
+            >
               Esta estación de bombeo aún no tiene registrada su Ficha Técnica
               en el sistema.
-            </Alert>
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => setOpenDetallesModal(true)}
-              sx={{ textTransform: "none", fontWeight: "bold" }}
-            >
-              Registrar Especificaciones Técnicas
-            </Button>
-          </Paper>
+            </Typography>
+
+            {(userRole === "admin" || userRole === "supervisor") && (
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<AddIcon />}
+                onClick={() => setOpenDetallesModal(true)}
+                sx={{ fontWeight: "bold", textTransform: "none", px: 3 }}
+              >
+                REGISTRAR ESPECIFICACIONES TÉCNICAS
+              </Button>
+            )}
+          </Box>
         ) : (
           <Paper
             elevation={0}
@@ -1117,80 +1149,131 @@ const GestionEstacion = () => {
       {/* PESTAÑA 1: GALERÍA DE FOTOS (Por ahora vacía hasta recibir tu JSON) */}
       {tabIndex === 1 && (
         <Box>
-          {(userRole === "admin" || userRole === "supervisor") && (
-            <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 3 }}>
-              <Button
-                variant="contained"
-                component="label"
-                startIcon={<PhotoCameraIcon />}
-                sx={{ textTransform: "none", fontWeight: "bold" }}
-              >
-                Subir Nueva Foto
-                {/* Input invisible que hace el trabajo sucio */}
-                <input
-                  type="file"
-                  hidden
-                  accept="image/*"
-                  onChange={handleSubirFoto}
-                />
-              </Button>
-            </Box>
-          )}
-
           {fotos.length === 0 ? (
-            <Alert severity="info" sx={{ justifyContent: "center" }}>
-              Esta estación de bombeo aún no cuenta con registro fotográfico.
-            </Alert>
-          ) : (
-            <Grid container spacing={3}>
-              {fotos.map((foto, index) => (
-                <Grid item xs={12} sm={6} md={4} key={foto.id_est_bombeo_foto}>
-                  <Card
-                    sx={{ position: "relative", borderRadius: 2, boxShadow: 3 }}
-                  >
-                    {/* 🔴 BOTÓN ELIMINAR FOTO (Estrictamente visible solo para el admin) */}
-                    {userRole === "admin" && (
-                      <IconButton
-                        color="error"
-                        onClick={() =>
-                          handleEliminarFoto(foto.id_est_bombeo_foto)
-                        } // Pasamos el ID único de la foto
-                        sx={{
-                          position: "absolute",
-                          top: 8,
-                          right: 8,
-                          backgroundColor: "rgba(255, 255, 255, 0.8)", // Fondo semitransparente
-                          "&:hover": {
-                            backgroundColor: "rgba(255, 0, 0, 0.1)",
-                          },
-                          zIndex: 2, // Asegura que quede por encima de la imagen
-                        }}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    )}
+            <>
+              <Box
+                sx={{
+                  textAlign: "center",
+                  p: 5,
+                  bgcolor: "#f8fafc",
+                  borderRadius: 2,
+                  border: "1px dashed #cbd5e1",
+                  mt: 2,
+                }}
+              >
+                <Typography
+                  color="text.secondary"
+                  sx={{ mb: 3, fontWeight: "medium" }}
+                >
+                  Esta estación de bombeo aún no cuenta con registro
+                  fotográfico.
+                </Typography>
 
-                    <CardMedia
-                      component="img"
-                      height="200"
-                      image={foto.foto_url} // 👈 Renderiza la imagen directa de Cloudinary
-                      alt={`Registro ${index + 1}`}
-                      sx={{ objectFit: "cover", bgcolor: "#f5f5f5" }}
+                {(userRole === "admin" || userRole === "supervisor") && (
+                  <Button
+                    variant="contained"
+                    component="label"
+                    startIcon={<PhotoCameraIcon />}
+                    sx={{ textTransform: "none", fontWeight: "bold" }}
+                  >
+                    Subir Primera Foto
+                    {/* Input invisible que hace el trabajo sucio */}
+                    <input
+                      type="file"
+                      hidden
+                      accept="image/*"
+                      onChange={handleSubirFoto}
                     />
-                    <CardContent sx={{ py: 1.5, "&:last-child": { pb: 1.5 } }}>
-                      <Typography
-                        variant="body2"
-                        fontWeight="bold"
-                        color="text.secondary"
-                        textAlign="center"
+                  </Button>
+                )}
+              </Box>
+            </>
+          ) : (
+            <>
+              {(userRole === "admin" || userRole === "supervisor") && (
+                <Box
+                  sx={{ display: "flex", justifyContent: "flex-end", mb: 3 }}
+                >
+                  <Button
+                    variant="contained"
+                    component="label"
+                    startIcon={<PhotoCameraIcon />}
+                    sx={{ textTransform: "none", fontWeight: "bold" }}
+                  >
+                    Subir Nueva Foto
+                    {/* Input invisible que hace el trabajo sucio */}
+                    <input
+                      type="file"
+                      hidden
+                      accept="image/*"
+                      onChange={handleSubirFoto}
+                    />
+                  </Button>
+                </Box>
+              )}
+
+              <Grid container spacing={3}>
+                {fotos.map((foto, index) => (
+                  <Grid
+                    item
+                    xs={12}
+                    sm={6}
+                    md={4}
+                    key={foto.id_est_bombeo_foto}
+                  >
+                    <Card
+                      sx={{
+                        position: "relative",
+                        borderRadius: 2,
+                        boxShadow: 3,
+                      }}
+                    >
+                      {/* 🔴 BOTÓN ELIMINAR FOTO (Estrictamente visible solo para el admin) */}
+                      {userRole === "admin" && (
+                        <IconButton
+                          color="error"
+                          onClick={() =>
+                            handleEliminarFoto(foto.id_est_bombeo_foto)
+                          } // Pasamos el ID único de la foto
+                          sx={{
+                            position: "absolute",
+                            top: 8,
+                            right: 8,
+                            backgroundColor: "rgba(255, 255, 255, 0.8)", // Fondo semitransparente
+                            "&:hover": {
+                              backgroundColor: "rgba(255, 0, 0, 0.1)",
+                            },
+                            zIndex: 2, // Asegura que quede por encima de la imagen
+                          }}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      )}
+
+                      <CardMedia
+                        component="img"
+                        height="200"
+                        image={foto.foto_url} // 👈 Renderiza la imagen directa de Cloudinary
+                        alt={`Registro ${index + 1}`}
+                        sx={{ objectFit: "cover", bgcolor: "#f5f5f5" }}
+                      />
+                      <CardContent
+                        sx={{ py: 1.5, "&:last-child": { pb: 1.5 } }}
                       >
-                        Registro Fotográfico #{index + 1}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
+                        <Typography
+                          variant="body2"
+                          fontWeight="bold"
+                          color="text.secondary"
+                          textAlign="center"
+                        >
+                          Registro Fotográfico #{index + 1}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            </>
           )}
         </Box>
       )}

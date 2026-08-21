@@ -454,598 +454,629 @@ export default function CcmTab({ idEstacion, userRole }) {
 
   return (
     <Box sx={{ mt: 2 }}>
-      {/* 🟢 BOTÓN SUPERIOR: AGREGAR CCM (Admin y Supervisor) */}
-      {(userRole === "admin" || userRole === "supervisor") && (
-        <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 3 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={handleOpenAdd}
-            sx={{ fontWeight: "bold" }}
-          >
-            Agregar CCM
-          </Button>
-        </Box>
-      )}
-
       {!ccmList || ccmList.length === 0 ? (
         <Box
           sx={{
             textAlign: "center",
-            p: 4,
+            p: 5,
             bgcolor: "#f8fafc",
             borderRadius: 2,
             border: "1px dashed #cbd5e1",
+            mt: 2,
           }}
         >
-          <Typography color="text.secondary">
-            No hay Centros de Control de Máquinas registrados en esta estación.
+          <Typography
+            color="text.secondary"
+            sx={{ mb: 3, fontWeight: "medium" }}
+          >
+            No hay Centros de Control de Máquinas registrados en esta estación
+            de bombeo.
           </Typography>
+
+          {/* 🟢 BOTÓN SUPERIOR: AGREGAR CCM (Admin y Supervisor) */}
+          {(userRole === "admin" || userRole === "supervisor") && (
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<AddIcon />}
+              onClick={handleOpenAdd}
+              sx={{ fontWeight: "bold", textTransform: "none", px: 3 }}
+            >
+              REGISTRAR PRIMER CCM
+            </Button>
+          )}
         </Box>
       ) : (
-        ccmList.map((ccm) => (
-          <Card
-            key={ccm.id_ccm}
-            sx={{
-              mb: 4,
-              boxShadow: 3,
-              borderTop: "4px solid #0284c7",
-              position: "relative",
-            }}
-          >
-            <CardContent>
-              {/* ENCABEZADO DE LA TARJETA */}
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  flexWrap: "wrap",
-                  gap: 1,
-                  mb: 2,
-                }}
+        <>
+          {/* 🟢 BOTÓN SUPERIOR: AGREGAR CCM (Admin y Supervisor) */}
+          {(userRole === "admin" || userRole === "supervisor") && (
+            <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 3 }}>
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<AddIcon />}
+                onClick={handleOpenAdd}
+                sx={{ fontWeight: "bold" }}
               >
-                <Typography variant="h6" fontWeight="bold" color="primary.dark">
-                  Centro de Control de Máquinas (CCM) - Tipo {ccm.tipo_ccm}
-                </Typography>
+                REGISTRAR CCM
+              </Button>
+            </Box>
+          )}
 
-                <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-                  {/* 👁️ BOTÓN VER FOTOS: Solo se muestra si el arreglo contiene imágenes reales */}
-                  {ccm.fotos && ccm.fotos.length > 0 && (
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      startIcon={<PhotoCameraIcon />}
-                      onClick={(e) =>
-                        abrirGaleriaMaster(
-                          ccm.fotos,
-                          `Fotos CCM #${ccm.id_ccm}`,
-                          "CCM",
-                          e,
-                        )
-                      }
-                      color="primary"
-                      sx={{ fontWeight: "bold" }}
-                    >
-                      Fotos ({ccm.fotos.length})
-                    </Button>
-                  )}
+          {ccmList.map((ccm) => (
+            <Card
+              key={ccm.id_ccm}
+              sx={{
+                mb: 4,
+                boxShadow: 3,
+                borderTop: "4px solid #0284c7",
+                position: "relative",
+              }}
+            >
+              <CardContent>
+                {/* ENCABEZADO DE LA TARJETA */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    flexWrap: "wrap",
+                    gap: 1,
+                    mb: 2,
+                  }}
+                >
+                  <Typography
+                    variant="h6"
+                    fontWeight="bold"
+                    color="primary.dark"
+                  >
+                    Centro de Control de Máquinas (CCM) - Tipo {ccm.tipo_ccm}
+                  </Typography>
 
-                  {/* 🟢 NUEVO: Botón para Cargar Fotos al CCM en Caliente */}
-                  {(userRole === "admin" || userRole === "supervisor") && (
-                    <IconButton
-                      color="primary"
-                      size="small"
-                      component="label"
-                      disabled={subiendoFoto}
+                  <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                    {/* 👁️ BOTÓN VER FOTOS: Solo se muestra si el arreglo contiene imágenes reales */}
+                    {ccm.fotos && ccm.fotos.length > 0 && (
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        startIcon={<PhotoCameraIcon />}
+                        onClick={(e) =>
+                          abrirGaleriaMaster(
+                            ccm.fotos,
+                            `Fotos CCM #${ccm.id_ccm}`,
+                            "CCM",
+                            e,
+                          )
+                        }
+                        color="primary"
+                        sx={{ fontWeight: "bold" }}
+                      >
+                        Fotos ({ccm.fotos.length})
+                      </Button>
+                    )}
+
+                    {/* 🟢 NUEVO: Botón para Cargar Fotos al CCM en Caliente */}
+                    {(userRole === "admin" || userRole === "supervisor") && (
+                      <IconButton
+                        color="primary"
+                        size="small"
+                        component="label"
+                        disabled={subiendoFoto}
+                        sx={{
+                          bgcolor: "#f0fdf4",
+                          color: "#16a34a",
+                          "&:hover": { bgcolor: "#dcfce7" },
+                        }}
+                      >
+                        <AddAPhotoIcon fontSize="small" />
+                        <input
+                          type="file"
+                          hidden
+                          multiple
+                          accept="image/*"
+                          onChange={(e) => handleSubirFotoCCM(ccm.id_ccm, e)}
+                        />
+                      </IconButton>
+                    )}
+
+                    {/* Botón Modificar */}
+                    {(userRole === "admin" || userRole === "supervisor") && (
+                      <IconButton
+                        color="info"
+                        size="small"
+                        onClick={(e) => handleOpenEdit(ccm, e)}
+                      >
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                    )}
+
+                    {/* Botón Eliminar */}
+                    {userRole === "admin" && (
+                      <IconButton
+                        color="error"
+                        size="small"
+                        onClick={(e) => handleEliminarCCM(ccm.id_ccm, e)}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    )}
+                  </Box>
+                </Box>
+
+                <Divider sx={{ mb: 2 }} />
+
+                {/* DATOS PRINCIPALES DEL CCM */}
+                <Box sx={{ mb: 3 }}>
+                  <Typography
+                    variant="subtitle2"
+                    color="text.secondary"
+                    sx={{ mb: 1 }}
+                  >
+                    Configuración Principal:
+                  </Typography>
+                  <Box sx={{ display: "flex", flexWrap: "wrap" }}>
+                    <BooleanChip
+                      label="Arranque Estado Sólido"
+                      value={ccm.arran_estado_solido}
+                    />
+                    <BooleanChip
+                      label="Variador de Velocidad"
+                      value={ccm.varia_veloc}
+                    />
+                    <BooleanChip label="Medidor" value={ccm.medidor} />
+                    <BooleanChip label="PLC" value={ccm.plc} />
+                    <BooleanChip
+                      label="Relé de Control"
+                      value={ccm.rele_contro}
+                    />
+                    <BooleanChip
+                      label="Supresor de Picos"
+                      value={ccm.supre_pico}
+                    />
+                    <BooleanChip
+                      label="Transf. Distribución"
+                      value={ccm.transf_distri}
+                    />
+                    <BooleanChip
+                      label="Prot. Falla a Tierra"
+                      value={ccm.prot_falla_tierra}
+                    />
+                  </Box>
+                </Box>
+
+                {/* ACORDEÓN 1: JUEGO DE CONTACTOS */}
+                <Accordion
+                  disableGutters
+                  elevation={0}
+                  sx={{ border: "1px solid #e2e8f0", mb: 1 }}
+                >
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    sx={{ bgcolor: "#f1f5f9" }}
+                  >
+                    <Box
                       sx={{
-                        bgcolor: "#f0fdf4",
-                        color: "#16a34a",
-                        "&:hover": { bgcolor: "#dcfce7" },
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        width: "100%",
+                        pr: 2,
                       }}
                     >
-                      <AddAPhotoIcon fontSize="small" />
-                      <input
-                        type="file"
-                        hidden
-                        multiple
-                        accept="image/*"
-                        onChange={(e) => handleSubirFotoCCM(ccm.id_ccm, e)}
-                      />
-                    </IconButton>
-                  )}
+                      <Typography fontWeight="bold">
+                        🎛️ Juegos de Contactos
+                      </Typography>
 
-                  {/* Botón Modificar */}
-                  {(userRole === "admin" || userRole === "supervisor") && (
-                    <IconButton
-                      color="info"
-                      size="small"
-                      onClick={(e) => handleOpenEdit(ccm, e)}
-                    >
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                  )}
-
-                  {/* Botón Eliminar */}
-                  {userRole === "admin" && (
-                    <IconButton
-                      color="error"
-                      size="small"
-                      onClick={(e) => handleEliminarCCM(ccm.id_ccm, e)}
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  )}
-                </Box>
-              </Box>
-
-              <Divider sx={{ mb: 2 }} />
-
-              {/* DATOS PRINCIPALES DEL CCM */}
-              <Box sx={{ mb: 3 }}>
-                <Typography
-                  variant="subtitle2"
-                  color="text.secondary"
-                  sx={{ mb: 1 }}
-                >
-                  Configuración Principal:
-                </Typography>
-                <Box sx={{ display: "flex", flexWrap: "wrap" }}>
-                  <BooleanChip
-                    label="Arranque Estado Sólido"
-                    value={ccm.arran_estado_solido}
-                  />
-                  <BooleanChip
-                    label="Variador de Velocidad"
-                    value={ccm.varia_veloc}
-                  />
-                  <BooleanChip label="Medidor" value={ccm.medidor} />
-                  <BooleanChip label="PLC" value={ccm.plc} />
-                  <BooleanChip
-                    label="Relé de Control"
-                    value={ccm.rele_contro}
-                  />
-                  <BooleanChip
-                    label="Supresor de Picos"
-                    value={ccm.supre_pico}
-                  />
-                  <BooleanChip
-                    label="Transf. Distribución"
-                    value={ccm.transf_distri}
-                  />
-                  <BooleanChip
-                    label="Prot. Falla a Tierra"
-                    value={ccm.prot_falla_tierra}
-                  />
-                </Box>
-              </Box>
-
-              {/* ACORDEÓN 1: JUEGO DE CONTACTOS */}
-              <Accordion
-                disableGutters
-                elevation={0}
-                sx={{ border: "1px solid #e2e8f0", mb: 1 }}
-              >
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  sx={{ bgcolor: "#f1f5f9" }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      width: "100%",
-                      pr: 2,
-                    }}
-                  >
-                    <Typography fontWeight="bold">
-                      🎛️ Juegos de Contactos
-                    </Typography>
-
-                    <Box>
-                      {!ccm.juegos_contactos &&
-                      (userRole === "admin" || userRole === "supervisor") ? (
-                        <Button
-                          size="small"
-                          variant="contained"
-                          color="success"
-                          startIcon={<PostAddIcon />}
-                          onClick={(e) => handleOpenContactos(ccm, false, e)}
-                        >
-                          Registrar Contactos
-                        </Button>
-                      ) : ccm.juegos_contactos ? (
-                        <>
-                          {(userRole === "admin" ||
-                            userRole === "supervisor") && (
-                            <IconButton
-                              color="info"
-                              size="small"
-                              onClick={(e) => handleOpenContactos(ccm, true, e)}
-                            >
-                              <EditIcon fontSize="small" />
-                            </IconButton>
-                          )}
-                          {userRole === "admin" && (
-                            <IconButton
-                              color="error"
-                              size="small"
-                              onClick={(e) =>
-                                handleEliminarContactos(ccm.id_ccm, e)
-                              }
-                            >
-                              <DeleteIcon fontSize="small" />
-                            </IconButton>
-                          )}
-                        </>
-                      ) : null}
+                      <Box>
+                        {!ccm.juegos_contactos &&
+                        (userRole === "admin" || userRole === "supervisor") ? (
+                          <Button
+                            size="small"
+                            variant="contained"
+                            color="success"
+                            startIcon={<PostAddIcon />}
+                            onClick={(e) => handleOpenContactos(ccm, false, e)}
+                          >
+                            Registrar Contactos
+                          </Button>
+                        ) : ccm.juegos_contactos ? (
+                          <>
+                            {(userRole === "admin" ||
+                              userRole === "supervisor") && (
+                              <IconButton
+                                color="info"
+                                size="small"
+                                onClick={(e) =>
+                                  handleOpenContactos(ccm, true, e)
+                                }
+                              >
+                                <EditIcon fontSize="small" />
+                              </IconButton>
+                            )}
+                            {userRole === "admin" && (
+                              <IconButton
+                                color="error"
+                                size="small"
+                                onClick={(e) =>
+                                  handleEliminarContactos(ccm.id_ccm, e)
+                                }
+                              >
+                                <DeleteIcon fontSize="small" />
+                              </IconButton>
+                            )}
+                          </>
+                        ) : null}
+                      </Box>
                     </Box>
-                  </Box>
-                </AccordionSummary>
+                  </AccordionSummary>
 
-                {ccm.juegos_contactos ? (
-                  <AccordionDetails>
-                    <Box sx={{ display: "flex", flexWrap: "wrap" }}>
-                      <BooleanChip
-                        label="Bipolar"
-                        value={ccm.juegos_contactos.bipolar}
-                      />
-                      <BooleanChip
-                        label="Tripolar"
-                        value={ccm.juegos_contactos.tripolar}
-                      />
-                      <BooleanChip
-                        label="Tetrapolar"
-                        value={ccm.juegos_contactos.tetrapolar}
-                      />
-                      <BooleanChip
-                        label="Pentapolar"
-                        value={ccm.juegos_contactos.pentapolar}
-                      />
-                    </Box>
-                  </AccordionDetails>
-                ) : (
-                  <AccordionDetails sx={{ textAlign: "center", py: 3 }}>
-                    <Typography color="text.secondary">
-                      No hay juegos de contactos registrados en este CCM.
-                    </Typography>
-                  </AccordionDetails>
-                )}
-              </Accordion>
-
-              {/* ACORDEÓN 2: TIPOS DE ARRANCADORES */}
-              <Accordion
-                disableGutters
-                elevation={0}
-                sx={{ border: "1px solid #e2e8f0", mb: 1 }}
-              >
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  sx={{ bgcolor: "#f1f5f9" }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      width: "100%",
-                      pr: 2,
-                    }}
-                  >
-                    <Typography fontWeight="bold">
-                      ⚙️ Tipos de Arrancadores
-                    </Typography>
-
-                    <Box>
-                      {!ccm.tipo_arrancadores &&
-                      (userRole === "admin" || userRole === "supervisor") ? (
-                        <Button
-                          size="small"
-                          variant="contained"
-                          color="success"
-                          startIcon={<PostAddIcon />}
-                          onClick={(e) => handleOpenArrancadores(ccm, false, e)}
-                        >
-                          Registrar Arrancadores
-                        </Button>
-                      ) : ccm.tipo_arrancadores ? (
-                        <>
-                          {(userRole === "admin" ||
-                            userRole === "supervisor") && (
-                            <IconButton
-                              color="info"
-                              size="small"
-                              onClick={(e) =>
-                                handleOpenArrancadores(ccm, true, e)
-                              }
-                            >
-                              <EditIcon fontSize="small" />
-                            </IconButton>
-                          )}
-                          {userRole === "admin" && (
-                            <IconButton
-                              color="error"
-                              size="small"
-                              onClick={(e) =>
-                                handleEliminarArrancadores(ccm.id_ccm, e)
-                              }
-                            >
-                              <DeleteIcon fontSize="small" />
-                            </IconButton>
-                          )}
-                        </>
-                      ) : null}
-                    </Box>
-                  </Box>
-                </AccordionSummary>
-
-                {ccm.tipo_arrancadores ? (
-                  <AccordionDetails>
-                    <Box sx={{ display: "flex", flexWrap: "wrap" }}>
-                      <BooleanChip
-                        label="C.E.S."
-                        value={ccm.tipo_arrancadores.c_e_s}
-                      />
-                      <BooleanChip
-                        label="Estrella-Triángulo"
-                        value={ccm.tipo_arrancadores.c_a_estrella_triangulo}
-                      />
-                      <BooleanChip
-                        label="Directo"
-                        value={ccm.tipo_arrancadores.c_a_directo}
-                      />
-                      <BooleanChip
-                        label="Con Reversión"
-                        value={ccm.tipo_arrancadores.c_a_con_reversion}
-                      />
-                      <BooleanChip
-                        label="Sin Reversión"
-                        value={ccm.tipo_arrancadores.c_a_sin_reversion}
-                      />
-                      <BooleanChip
-                        label="Compen. Transformador"
-                        value={ccm.tipo_arrancadores.c_a_compen_transformador}
-                      />
-                      <BooleanChip
-                        label="Arrancador Suave"
-                        value={ccm.tipo_arrancadores.c_a_arrancador_suave}
-                      />
-                      <BooleanChip
-                        label="Conv. Frecuencia"
-                        value={ccm.tipo_arrancadores.c_convertidor_frecuencia}
-                      />
-                      <BooleanChip
-                        label="Bobinas Magnéticas"
-                        value={ccm.tipo_arrancadores.bobinas_magneticas}
-                      />
-                      <BooleanChip
-                        label="Fusible"
-                        value={ccm.tipo_arrancadores.fusible}
-                      />
-                      <BooleanChip
-                        label="Interruptor"
-                        value={ccm.tipo_arrancadores.interruptor}
-                      />
-                      <BooleanChip
-                        label="Interr. Limitador Corriente"
-                        value={
-                          ccm.tipo_arrancadores.interruptor_limitador_corriente
-                        }
-                      />
-                    </Box>
-                  </AccordionDetails>
-                ) : (
-                  <AccordionDetails sx={{ textAlign: "center", py: 3 }}>
-                    <Typography color="text.secondary">
-                      No hay configuración de arrancadores registrada en este
-                      CCM.
-                    </Typography>
-                  </AccordionDetails>
-                )}
-              </Accordion>
-
-              {/* ACORDEÓN 3: TIPO DE CIRCUITO */}
-              <Accordion
-                disableGutters
-                elevation={0}
-                sx={{ border: "1px solid #e2e8f0" }}
-              >
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  sx={{ bgcolor: "#f1f5f9" }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      width: "100%",
-                      pr: 2,
-                    }}
-                  >
-                    <Typography fontWeight="bold">
-                      🔌 Especificaciones del Circuito
-                    </Typography>
-
-                    <Box>
-                      {/* Mostrar Agregar si NO existe el circuito, Mostrar Editar/Borrar si YA existe */}
-                      {!ccm.tipo_circuito &&
-                      (userRole === "admin" || userRole === "supervisor") ? (
-                        <Button
-                          size="small"
-                          variant="contained"
-                          color="success"
-                          startIcon={<PostAddIcon />}
-                          onClick={(e) => handleOpenCircuito(ccm, false, e)}
-                        >
-                          Registrar Circuito
-                        </Button>
-                      ) : ccm.tipo_circuito ? (
-                        <>
-                          {(userRole === "admin" ||
-                            userRole === "supervisor") && (
-                            <IconButton
-                              color="info"
-                              size="small"
-                              onClick={(e) => handleOpenCircuito(ccm, true, e)}
-                            >
-                              <EditIcon fontSize="small" />
-                            </IconButton>
-                          )}
-                          {userRole === "admin" && (
-                            <IconButton
-                              color="error"
-                              size="small"
-                              onClick={(e) =>
-                                handleEliminarCircuito(ccm.id_ccm, e)
-                              }
-                            >
-                              <DeleteIcon fontSize="small" />
-                            </IconButton>
-                          )}
-                        </>
-                      ) : null}
-                    </Box>
-                  </Box>
-                </AccordionSummary>
-
-                {/* Detalles renderizados solo si existe */}
-                {ccm.tipo_circuito ? (
-                  <AccordionDetails>
+                  {ccm.juegos_contactos ? (
                     <AccordionDetails>
-                      <Grid container spacing={2}>
-                        <Grid item xs={12} sm={4}>
-                          <Typography variant="body2">
-                            <b>Entrada/Salida Cables:</b>{" "}
-                            {ccm.tipo_circuito.e_s_cables}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                          <Typography variant="body2">
-                            <b>Clase Tensión:</b>{" "}
-                            {ccm.tipo_circuito.clase_tension}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                          <Typography variant="body2">
-                            <b>Tensión Nominal Red:</b>{" "}
-                            {ccm.tipo_circuito.tension_nominal_red} V
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                          <Typography variant="body2">
-                            <b>Tensión Mando:</b>{" "}
-                            {ccm.tipo_circuito.tension_mando} V
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                          <Typography variant="body2">
-                            <b>Frecuencia Nominal:</b>{" "}
-                            {ccm.tipo_circuito.frecuencia_nominal} Hz
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                          <Typography variant="body2">
-                            <b>Corriente Nominal:</b>{" "}
-                            {ccm.tipo_circuito.corriente_nominal} A
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                          <Typography variant="body2">
-                            <b>Corriente Corta Dur.:</b>{" "}
-                            {ccm.tipo_circuito.corriente_corta_duracion} A
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                          <Typography variant="body2">
-                            <b>NBI:</b> {ccm.tipo_circuito.nbi} kV
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                          <Typography variant="body2">
-                            <b>Temp. Ambiente:</b>{" "}
-                            {ccm.tipo_circuito.temp_ambiente} °C
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                          <Typography variant="body2">
-                            <b>Interruptor Principal:</b>{" "}
-                            {ccm.tipo_circuito.interruptor_principal
-                              ? "Sí"
-                              : "No"}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                          <Typography variant="body2">
-                            <b>Elevación Temp.:</b>{" "}
-                            {ccm.tipo_circuito.elevacion_temp} °C
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                          <Typography variant="body2">
-                            <b>Barra Ramales:</b>{" "}
-                            {ccm.tipo_circuito.barra_ramales} A
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                          <Typography variant="body2">
-                            <b>Altitud Máx.:</b> {ccm.tipo_circuito.altitud_max}{" "}
-                            m
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                          <Typography variant="body2">
-                            <b>Voltaje Aislamiento:</b>{" "}
-                            {ccm.tipo_circuito.voltaje_aislamiento} V
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                          <Typography variant="body2">
-                            <b>Barras Principales:</b>{" "}
-                            {ccm.tipo_circuito.barras_principales} A
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                          <Typography variant="body2">
-                            <b>Cap. Corto Circuito:</b>{" "}
-                            {ccm.tipo_circuito.cap_corto_circuito} kA
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                          <Typography variant="body2">
-                            <b>Voltaje Trabajo:</b>{" "}
-                            {ccm.tipo_circuito.voltaje_trabajo} V
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                          <Typography variant="body2">
-                            <b>Voltaje Control:</b>{" "}
-                            {ccm.tipo_circuito.voltaje_control} V
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                          <Typography variant="body2">
-                            <b>Cap. Interrupción Máx.:</b>{" "}
-                            {ccm.tipo_circuito.cap_interrupcion_max} kA
-                          </Typography>
-                        </Grid>
-                      </Grid>
+                      <Box sx={{ display: "flex", flexWrap: "wrap" }}>
+                        <BooleanChip
+                          label="Bipolar"
+                          value={ccm.juegos_contactos.bipolar}
+                        />
+                        <BooleanChip
+                          label="Tripolar"
+                          value={ccm.juegos_contactos.tripolar}
+                        />
+                        <BooleanChip
+                          label="Tetrapolar"
+                          value={ccm.juegos_contactos.tetrapolar}
+                        />
+                        <BooleanChip
+                          label="Pentapolar"
+                          value={ccm.juegos_contactos.pentapolar}
+                        />
+                      </Box>
                     </AccordionDetails>
-                  </AccordionDetails>
-                ) : (
-                  <AccordionDetails sx={{ textAlign: "center", py: 3 }}>
-                    <Typography color="text.secondary">
-                      No hay circuito registrado. Haga clic en el botón superior
-                      para agregar.
-                    </Typography>
-                  </AccordionDetails>
-                )}
-              </Accordion>
-            </CardContent>
-          </Card>
-        ))
+                  ) : (
+                    <AccordionDetails sx={{ textAlign: "center", py: 3 }}>
+                      <Typography color="text.secondary">
+                        No hay juegos de contactos registrados en este CCM.
+                      </Typography>
+                    </AccordionDetails>
+                  )}
+                </Accordion>
+
+                {/* ACORDEÓN 2: TIPOS DE ARRANCADORES */}
+                <Accordion
+                  disableGutters
+                  elevation={0}
+                  sx={{ border: "1px solid #e2e8f0", mb: 1 }}
+                >
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    sx={{ bgcolor: "#f1f5f9" }}
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        width: "100%",
+                        pr: 2,
+                      }}
+                    >
+                      <Typography fontWeight="bold">
+                        ⚙️ Tipos de Arrancadores
+                      </Typography>
+
+                      <Box>
+                        {!ccm.tipo_arrancadores &&
+                        (userRole === "admin" || userRole === "supervisor") ? (
+                          <Button
+                            size="small"
+                            variant="contained"
+                            color="success"
+                            startIcon={<PostAddIcon />}
+                            onClick={(e) =>
+                              handleOpenArrancadores(ccm, false, e)
+                            }
+                          >
+                            Registrar Arrancadores
+                          </Button>
+                        ) : ccm.tipo_arrancadores ? (
+                          <>
+                            {(userRole === "admin" ||
+                              userRole === "supervisor") && (
+                              <IconButton
+                                color="info"
+                                size="small"
+                                onClick={(e) =>
+                                  handleOpenArrancadores(ccm, true, e)
+                                }
+                              >
+                                <EditIcon fontSize="small" />
+                              </IconButton>
+                            )}
+                            {userRole === "admin" && (
+                              <IconButton
+                                color="error"
+                                size="small"
+                                onClick={(e) =>
+                                  handleEliminarArrancadores(ccm.id_ccm, e)
+                                }
+                              >
+                                <DeleteIcon fontSize="small" />
+                              </IconButton>
+                            )}
+                          </>
+                        ) : null}
+                      </Box>
+                    </Box>
+                  </AccordionSummary>
+
+                  {ccm.tipo_arrancadores ? (
+                    <AccordionDetails>
+                      <Box sx={{ display: "flex", flexWrap: "wrap" }}>
+                        <BooleanChip
+                          label="C.E.S."
+                          value={ccm.tipo_arrancadores.c_e_s}
+                        />
+                        <BooleanChip
+                          label="Estrella-Triángulo"
+                          value={ccm.tipo_arrancadores.c_a_estrella_triangulo}
+                        />
+                        <BooleanChip
+                          label="Directo"
+                          value={ccm.tipo_arrancadores.c_a_directo}
+                        />
+                        <BooleanChip
+                          label="Con Reversión"
+                          value={ccm.tipo_arrancadores.c_a_con_reversion}
+                        />
+                        <BooleanChip
+                          label="Sin Reversión"
+                          value={ccm.tipo_arrancadores.c_a_sin_reversion}
+                        />
+                        <BooleanChip
+                          label="Compen. Transformador"
+                          value={ccm.tipo_arrancadores.c_a_compen_transformador}
+                        />
+                        <BooleanChip
+                          label="Arrancador Suave"
+                          value={ccm.tipo_arrancadores.c_a_arrancador_suave}
+                        />
+                        <BooleanChip
+                          label="Conv. Frecuencia"
+                          value={ccm.tipo_arrancadores.c_convertidor_frecuencia}
+                        />
+                        <BooleanChip
+                          label="Bobinas Magnéticas"
+                          value={ccm.tipo_arrancadores.bobinas_magneticas}
+                        />
+                        <BooleanChip
+                          label="Fusible"
+                          value={ccm.tipo_arrancadores.fusible}
+                        />
+                        <BooleanChip
+                          label="Interruptor"
+                          value={ccm.tipo_arrancadores.interruptor}
+                        />
+                        <BooleanChip
+                          label="Interr. Limitador Corriente"
+                          value={
+                            ccm.tipo_arrancadores
+                              .interruptor_limitador_corriente
+                          }
+                        />
+                      </Box>
+                    </AccordionDetails>
+                  ) : (
+                    <AccordionDetails sx={{ textAlign: "center", py: 3 }}>
+                      <Typography color="text.secondary">
+                        No hay configuración de arrancadores registrada en este
+                        CCM.
+                      </Typography>
+                    </AccordionDetails>
+                  )}
+                </Accordion>
+
+                {/* ACORDEÓN 3: TIPO DE CIRCUITO */}
+                <Accordion
+                  disableGutters
+                  elevation={0}
+                  sx={{ border: "1px solid #e2e8f0" }}
+                >
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    sx={{ bgcolor: "#f1f5f9" }}
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        width: "100%",
+                        pr: 2,
+                      }}
+                    >
+                      <Typography fontWeight="bold">
+                        🔌 Especificaciones del Circuito
+                      </Typography>
+
+                      <Box>
+                        {/* Mostrar Agregar si NO existe el circuito, Mostrar Editar/Borrar si YA existe */}
+                        {!ccm.tipo_circuito &&
+                        (userRole === "admin" || userRole === "supervisor") ? (
+                          <Button
+                            size="small"
+                            variant="contained"
+                            color="success"
+                            startIcon={<PostAddIcon />}
+                            onClick={(e) => handleOpenCircuito(ccm, false, e)}
+                          >
+                            Registrar Circuito
+                          </Button>
+                        ) : ccm.tipo_circuito ? (
+                          <>
+                            {(userRole === "admin" ||
+                              userRole === "supervisor") && (
+                              <IconButton
+                                color="info"
+                                size="small"
+                                onClick={(e) =>
+                                  handleOpenCircuito(ccm, true, e)
+                                }
+                              >
+                                <EditIcon fontSize="small" />
+                              </IconButton>
+                            )}
+                            {userRole === "admin" && (
+                              <IconButton
+                                color="error"
+                                size="small"
+                                onClick={(e) =>
+                                  handleEliminarCircuito(ccm.id_ccm, e)
+                                }
+                              >
+                                <DeleteIcon fontSize="small" />
+                              </IconButton>
+                            )}
+                          </>
+                        ) : null}
+                      </Box>
+                    </Box>
+                  </AccordionSummary>
+
+                  {/* Detalles renderizados solo si existe */}
+                  {ccm.tipo_circuito ? (
+                    <AccordionDetails>
+                      <AccordionDetails>
+                        <Grid container spacing={2}>
+                          <Grid item xs={12} sm={4}>
+                            <Typography variant="body2">
+                              <b>Entrada/Salida Cables:</b>{" "}
+                              {ccm.tipo_circuito.e_s_cables}
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={12} sm={4}>
+                            <Typography variant="body2">
+                              <b>Clase Tensión:</b>{" "}
+                              {ccm.tipo_circuito.clase_tension}
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={12} sm={4}>
+                            <Typography variant="body2">
+                              <b>Tensión Nominal Red:</b>{" "}
+                              {ccm.tipo_circuito.tension_nominal_red} V
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={12} sm={4}>
+                            <Typography variant="body2">
+                              <b>Tensión Mando:</b>{" "}
+                              {ccm.tipo_circuito.tension_mando} V
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={12} sm={4}>
+                            <Typography variant="body2">
+                              <b>Frecuencia Nominal:</b>{" "}
+                              {ccm.tipo_circuito.frecuencia_nominal} Hz
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={12} sm={4}>
+                            <Typography variant="body2">
+                              <b>Corriente Nominal:</b>{" "}
+                              {ccm.tipo_circuito.corriente_nominal} A
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={12} sm={4}>
+                            <Typography variant="body2">
+                              <b>Corriente Corta Dur.:</b>{" "}
+                              {ccm.tipo_circuito.corriente_corta_duracion} A
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={12} sm={4}>
+                            <Typography variant="body2">
+                              <b>NBI:</b> {ccm.tipo_circuito.nbi} kV
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={12} sm={4}>
+                            <Typography variant="body2">
+                              <b>Temp. Ambiente:</b>{" "}
+                              {ccm.tipo_circuito.temp_ambiente} °C
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={12} sm={4}>
+                            <Typography variant="body2">
+                              <b>Interruptor Principal:</b>{" "}
+                              {ccm.tipo_circuito.interruptor_principal
+                                ? "Sí"
+                                : "No"}
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={12} sm={4}>
+                            <Typography variant="body2">
+                              <b>Elevación Temp.:</b>{" "}
+                              {ccm.tipo_circuito.elevacion_temp} °C
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={12} sm={4}>
+                            <Typography variant="body2">
+                              <b>Barra Ramales:</b>{" "}
+                              {ccm.tipo_circuito.barra_ramales} A
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={12} sm={4}>
+                            <Typography variant="body2">
+                              <b>Altitud Máx.:</b>{" "}
+                              {ccm.tipo_circuito.altitud_max} m
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={12} sm={4}>
+                            <Typography variant="body2">
+                              <b>Voltaje Aislamiento:</b>{" "}
+                              {ccm.tipo_circuito.voltaje_aislamiento} V
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={12} sm={4}>
+                            <Typography variant="body2">
+                              <b>Barras Principales:</b>{" "}
+                              {ccm.tipo_circuito.barras_principales} A
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={12} sm={4}>
+                            <Typography variant="body2">
+                              <b>Cap. Corto Circuito:</b>{" "}
+                              {ccm.tipo_circuito.cap_corto_circuito} kA
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={12} sm={4}>
+                            <Typography variant="body2">
+                              <b>Voltaje Trabajo:</b>{" "}
+                              {ccm.tipo_circuito.voltaje_trabajo} V
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={12} sm={4}>
+                            <Typography variant="body2">
+                              <b>Voltaje Control:</b>{" "}
+                              {ccm.tipo_circuito.voltaje_control} V
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={12} sm={4}>
+                            <Typography variant="body2">
+                              <b>Cap. Interrupción Máx.:</b>{" "}
+                              {ccm.tipo_circuito.cap_interrupcion_max} kA
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                      </AccordionDetails>
+                    </AccordionDetails>
+                  ) : (
+                    <AccordionDetails sx={{ textAlign: "center", py: 3 }}>
+                      <Typography color="text.secondary">
+                        No hay circuito registrado. Haga clic en el botón
+                        superior para agregar.
+                      </Typography>
+                    </AccordionDetails>
+                  )}
+                </Accordion>
+              </CardContent>
+            </Card>
+          ))}
+        </>
       )}
 
       {/* 📝 DIALOG/MODAL FORMULARIO: REGISTRAR Y EDITAR CCM MADRE */}

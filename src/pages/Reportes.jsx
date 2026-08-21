@@ -236,7 +236,7 @@ export default function Reportes() {
                   color="text.secondary"
                   fontWeight="bold"
                 >
-                  🔹 ÁMBITO: Toda la Red Nacional
+                  🔹 ÁMBITO: Toda la Red Regional
                 </Typography>
               </Box>
             </CardContent>
@@ -274,7 +274,7 @@ export default function Reportes() {
 
               <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                 Seleccione una estación de la lista interactiva para extraer su
-                expediente técnico completo por ID.
+                expediente técnico completo.
               </Typography>
 
               {/* BUSCADOR */}

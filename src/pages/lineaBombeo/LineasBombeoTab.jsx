@@ -19,6 +19,7 @@ import {
   Button,
 } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
+import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
 import Swal from "sweetalert2";
 import EditIcon from "@mui/icons-material/Edit";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -236,7 +237,7 @@ const LineasBombeoTab = ({ idEstacion, userRole }) => {
     }
   };
 
-  // ⬆️ Lógica para subir fotos a la línea de bombeo (CORREGIDA)
+  // ⬆️ Lógica para subir fotos a la línea de bombeo
   const handleSubirFotoLinea = async (idLinea, event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -860,7 +861,6 @@ const LineasBombeoTab = ({ idEstacion, userRole }) => {
   };
 
   // 🗑️ ACCIÓN: Eliminar Foto del Motor Eléctrico
-  // 🗑️ ACCIÓN: Eliminar Foto del Motor (CORREGIDA)
   const handleEliminarFotoMotor = async (idFoto) => {
     Swal.fire({
       title: "¿Deseas eliminar permanentemente esta fotografía?",
@@ -925,28 +925,6 @@ const LineasBombeoTab = ({ idEstacion, userRole }) => {
 
   return (
     <Box>
-      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
-        <Typography variant="h6" color="primary" fontWeight="bold">
-          Gestión de Líneas de Bombeo
-        </Typography>
-        {(userRole === "admin" || userRole === "supervisor") && (
-          <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 0 }}>
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<AddIcon />} // Descomenta si usas el ícono de Material UI
-              onClick={() => {
-                setModalLineaModo("add");
-                setLineaAEditar(null);
-                setModalLineaOpen(true);
-              }}
-            >
-              Registrar Línea de Bombeo
-            </Button>
-          </Box>
-        )}
-      </Box>
-
       <Box>
         {/* 🌟 1. EL BOTÓN VA AQUÍ (Siempre visible para Admin/Supervisor, tenga o no líneas la estación) */}
 
@@ -959,634 +937,373 @@ const LineasBombeoTab = ({ idEstacion, userRole }) => {
           /* Esto es lo que estás viendo en tu captura actualmente: */
           <Box
             sx={{
-              bgcolor: "#ffffff",
-              p: 4,
-              borderRadius: 2,
               textAlign: "center",
-              boxShadow: 1,
+              p: 5,
+              bgcolor: "#f8fafc",
+              borderRadius: 2,
+              border: "1px dashed #cbd5e1",
+              mt: 2,
             }}
           >
-            <Typography variant="body1" color="text.secondary">
+            <Typography
+              color="text.secondary"
+              sx={{ mb: 3, fontWeight: "medium" }}
+            >
               No hay líneas de bombeo registradas en esta estación.
             </Typography>
+
+            {(userRole === "admin" || userRole === "supervisor") && (
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<AddIcon />}
+                onClick={() => {
+                  setModalLineaModo("add");
+                  setLineaAEditar(null);
+                  setModalLineaOpen(true);
+                }}
+                sx={{ fontWeight: "bold", textTransform: "none", px: 3 }}
+              >
+                REGISTRAR PRIMERA LÍNEA DE BOMBEO
+              </Button>
+            )}
           </Box>
         ) : (
-          /* Aquí va tu .map() actual que dibuja los acordeones de las líneas */
-          lineas.map((linea) => (
-            <Box key={linea.id_linea_bombeo}>
-              {/* Tu componente de línea con los botones de modificar y eliminar */}
-
-              <Accordion
-                key={linea.id_linea_bombeo}
-                sx={{ mb: 2, borderRadius: 2, border: "1px solid #e0e0e0" }}
+          <>
+            <Box
+              sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}
+            >
+              <Typography
+                variant="h6"
+                fontWeight="bold"
+                color="text.primary"
+                sx={{ display: "flex", alignItems: "center", gap: 1 }}
               >
-                {/* 🟢 CABECERA DE LA LÍNEA */}
-                <AccordionSummary
-                  component="div"
-                  expandIcon={<ExpandMoreIcon />}
-                  sx={{ backgroundColor: "#f8fafc" }}
+                <PrecisionManufacturingIcon color="primary" /> Líneas de Bombeo
+              </Typography>
+              {(userRole === "admin" || userRole === "supervisor") && (
+                <Box
+                  sx={{ display: "flex", justifyContent: "flex-end", mb: 0 }}
                 >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 2,
-                      width: "100%",
-                      pr: 2,
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<AddIcon />} // Descomenta si usas el ícono de Material UI
+                    onClick={() => {
+                      setModalLineaModo("add");
+                      setLineaAEditar(null);
+                      setModalLineaOpen(true);
                     }}
                   >
-                    <Typography fontWeight="bold" variant="subtitle1">
-                      Línea #{linea.numero_linea}: {linea.nombre_linea_bombeo}
-                    </Typography>
-                    <Chip
-                      label={linea.estado_linea_bombeo}
-                      color={
-                        linea.estado_linea_bombeo === "ACTIVA"
-                          ? "success"
-                          : "warning"
-                      }
-                      size="small"
-                      sx={{ fontWeight: "bold" }}
-                    />
+                    Registrar Línea de Bombeo
+                  </Button>
+                </Box>
+              )}
+            </Box>
+            {lineas.map((linea) => (
+              <Box key={linea.id_linea_bombeo}>
+                {/* Tu componente de línea con los botones de modificar y eliminar */}
 
+                <Accordion
+                  key={linea.id_linea_bombeo}
+                  sx={{ mb: 2, borderRadius: 2, border: "1px solid #e0e0e0" }}
+                >
+                  {/* 🟢 CABECERA DE LA LÍNEA */}
+                  <AccordionSummary
+                    component="div"
+                    expandIcon={<ExpandMoreIcon />}
+                    sx={{ backgroundColor: "#f8fafc" }}
+                  >
                     <Box
                       sx={{
-                        ml: "auto",
                         display: "flex",
                         alignItems: "center",
-                        gap: 1,
+                        gap: 2,
+                        width: "100%",
+                        pr: 2,
                       }}
                     >
-                      {/* Botón para abrir la galería existente */}
-                      {linea.fotos_linea &&
-                      Array.isArray(linea.fotos_linea) &&
-                      linea.fotos_linea.length > 0 ? (
-                        <Button
-                          icon={<PhotoCameraIcon />}
-                          size="small"
-                          color="primary"
-                          variant="outlined"
-                          clickable
-                          onClick={(e) => {
-                            // 🌟 Frenamos el clic aquí mismo para que el Accordion de fondo no se entere
-                            e.stopPropagation();
-                            abrirGaleriaMaster(
-                              linea.fotos_linea,
-                              `Línea: ${linea.nombre_linea_bombeo}`,
-                              "LINEA",
-                              e,
-                              linea.id_linea_bombeo,
-                            );
-                          }}
-                          sx={{
-                            fontWeight: "bold",
-                          }}
-                        >
-                          Fotos ({linea.fotos_linea.length})
-                        </Button>
-                      ) : (
-                        <Typography
-                          variant="caption"
-                          color="text.secondary"
-                          sx={{ fontStyle: "italic", mr: 1 }}
-                        >
-                          Sin registro fotográfico
-                        </Typography>
-                      )}
-
-                      {/* 📸 ACCIÓN: SUBIR FOTO A LA LÍNEA (Visible para admin y supervisor) */}
-                      {(userRole === "admin" || userRole === "supervisor") && (
-                        <IconButton
-                          color="primary"
-                          size="small"
-                          component="label"
-                          disabled={submitting}
-                          onClick={(e) => e.stopPropagation()} // Evita abrir el acordeón
-                          sx={{
-                            bgcolor: "#f0fdf4",
-                            color: "#16a34a",
-                            "&:hover": { bgcolor: "#dcfce7" },
-                          }}
-                        >
-                          <AddAPhotoIcon fontSize="small" />
-                          <input
-                            type="file"
-                            hidden
-                            accept="image/*"
-                            disabled={submitting}
-                            onChange={(e) =>
-                              handleSubirFotoLinea(linea.id_linea_bombeo, e)
-                            }
-                          />
-                        </IconButton>
-                      )}
-                    </Box>
-
-                    <Box sx={{ display: "flex", gap: 1 }}>
-                      {/* ✏️ BOTÓN MODIFICAR (Admin y Supervisor) */}
-                      {(userRole === "admin" || userRole === "supervisor") && (
-                        <IconButton
-                          size="small"
-                          color="info"
-                          onClick={(e) => {
-                            e.stopPropagation(); // Evita abrir o cerrar el acordeón
-                            setModalLineaModo("edit");
-                            setLineaAEditar(linea);
-                            setModalLineaOpen(true);
-                          }}
-                        >
-                          <EditIcon fontSize="small" />
-                        </IconButton>
-                      )}
-
-                      {/* ❌ BOTÓN ELIMINAR (Estricto: Solo Admin) */}
-                      {userRole === "admin" && (
-                        <IconButton
-                          size="small"
-                          color="error"
-                          onClick={(e) => {
-                            e.stopPropagation(); // Evita abrir o cerrar el acordeón
-                            handleEliminarLinea(
-                              linea.id_linea_bombeo,
-                              linea.nombre_linea_bombeo,
-                            );
-                          }}
-                        >
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
-                      )}
-                    </Box>
-                  </Box>
-                </AccordionSummary>
-
-                {/* 🔵 DETALLES DE LA LÍNEA */}
-                <AccordionDetails sx={{ p: 3, backgroundColor: "#ffffff" }}>
-                  {linea.observaciones_linea_bombeo && (
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ mb: 3, fontStyle: "italic" }}
-                    >
-                      <strong>Observaciones:</strong>{" "}
-                      {linea.observaciones_linea_bombeo}
-                    </Typography>
-                  )}
-
-                  <Grid container spacing={3}>
-                    {/* VÁLVULAS */}
-                    {/* 🔴 COLUMNA IZQUIERDA: VÁLVULAS CON TODOS SUS DETALLES */}
-                    <Grid item xs={12} md={3.5}>
-                      <Typography
-                        variant="subtitle2"
-                        color="primary"
-                        fontWeight="bold"
-                        sx={{
-                          mb: 2,
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 1,
-                        }}
-                      >
-                        <PropaneIcon fontSize="small" /> Válvulas de Control (
-                        {linea.valvulas ? linea.valvulas.length : 0})
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "flex-end",
-                            mb: 0,
-                          }}
-                        >
-                          {/* BOTÓN REGISTRAR VÁLVULA (Cabecera de la sección Válvulas) */}
-                          {(userRole === "admin" ||
-                            userRole === "supervisor") && (
-                            <Button
-                              size="small"
-                              variant="outlined"
-                              onClick={() => {
-                                setIdLineaParaValvula(linea.id_linea_bombeo);
-                                setModalValvulaModo("add");
-                                setValvulaAEditar(null);
-                                setModalValvulaOpen(true);
-                              }}
-                            >
-                              + Añadir Válvula
-                            </Button>
-                          )}
-                        </Box>
+                      <Typography fontWeight="bold" variant="subtitle1">
+                        Línea #{linea.numero_linea}: {linea.nombre_linea_bombeo}
                       </Typography>
+                      <Chip
+                        label={linea.estado_linea_bombeo}
+                        color={
+                          linea.estado_linea_bombeo === "ACTIVA"
+                            ? "success"
+                            : "warning"
+                        }
+                        size="small"
+                        sx={{ fontWeight: "bold" }}
+                      />
 
-                      {!linea.valvulas || linea.valvulas.length === 0 ? (
-                        <Typography variant="body2" color="text.secondary">
-                          Sin válvulas registradas.
-                        </Typography>
-                      ) : (
-                        <Box
-                          sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: 2,
-                          }}
-                        >
-                          {linea.valvulas.map((valvula) => (
-                            <Card
-                              key={valvula.id_valvula}
-                              variant="outlined"
-                              sx={{
-                                bgcolor: "#fafafa",
-                                borderColor: "#cbd5e1",
-                                borderRadius: 2,
-                                boxShadow: "0 2px 4px rgba(0,0,0,0.02)",
-                              }}
-                            >
-                              <CardContent
-                                sx={{ p: 2.5, "&:last-child": { pb: 2.5 } }}
-                              >
-                                {/* Encabezado Principal */}
-                                <Box
-                                  sx={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "flex-start",
-                                    mb: 1.5,
-                                  }}
-                                >
-                                  <Box>
-                                    <Typography
-                                      variant="subtitle2"
-                                      fontWeight="bold"
-                                      color="primary.main"
-                                    >
-                                      Válvula de {valvula.tipo_valvula}
-                                    </Typography>
-                                    <Typography
-                                      variant="caption"
-                                      color="text.secondary"
-                                      sx={{ display: "block", mt: -0.5 }}
-                                    >
-                                      {valvula.marca_valvula} • Mod.{" "}
-                                      {valvula.modelo_valvula}
-                                    </Typography>
-                                  </Box>
-
-                                  {/* 🛠️ Contenedor de Acciones (Fotos, Modificar, Eliminar) */}
-                                  {/* 🛠️ Contenedor de Acciones de la Válvula (Fotos, Modificar, Eliminar) */}
-                                  <Box
-                                    sx={{
-                                      display: "flex",
-                                      gap: 1,
-                                      alignItems: "center",
-                                      ml: "auto",
-                                    }}
-                                  >
-                                    {/* 📸 Gestión Visual de Fotos */}
-                                    {valvula.fotos_valvula &&
-                                    Array.isArray(valvula.fotos_valvula) &&
-                                    valvula.fotos_valvula.length > 0 ? (
-                                      <Chip
-                                        icon={<PhotoCameraIcon />}
-                                        label={`${valvula.fotos_valvula.length} Fotos`}
-                                        size="small"
-                                        color="primary"
-                                        variant="outlined"
-                                        clickable
-                                        onClick={(e) => {
-                                          e.stopPropagation(); // Frenamos el burbujeo en la UI
-                                          abrirGaleriaMaster(
-                                            valvula.fotos_valvula,
-                                            `Válvula de la Línea`,
-                                            "VALVULA",
-                                            e,
-                                          );
-                                        }}
-                                        sx={{
-                                          fontWeight: "bold",
-                                          "&:hover": { bgcolor: "#e0f2fe" },
-                                        }}
-                                      />
-                                    ) : (
-                                      <Typography
-                                        variant="caption"
-                                        color="text.secondary"
-                                        sx={{ fontStyle: "italic", mr: 1 }}
-                                      >
-                                        Sin registro fotográfico
-                                      </Typography>
-                                    )}
-
-                                    {/* 📸 ACCIÓN: SUBIR FOTO A LA VÁLVULA (Visible para Admin y Supervisor) */}
-                                    {(userRole === "admin" ||
-                                      userRole === "supervisor") && (
-                                      <IconButton
-                                        color="primary"
-                                        size="small"
-                                        component="label"
-                                        disabled={submitting}
-                                        onClick={(e) => e.stopPropagation()}
-                                        sx={{
-                                          bgcolor: "#f0fdf4",
-                                          color: "#16a34a",
-                                          "&:hover": { bgcolor: "#dcfce7" },
-                                        }}
-                                      >
-                                        <AddAPhotoIcon fontSize="small" />
-                                        <input
-                                          type="file"
-                                          hidden
-                                          multiple // Permite seleccionar más de una foto gracias a tu upload.array
-                                          accept="image/*"
-                                          disabled={submitting}
-                                          onChange={(e) =>
-                                            handleSubirFotoValvula(
-                                              valvula.id_valvula,
-                                              e,
-                                            )
-                                          }
-                                        />
-                                      </IconButton>
-                                    )}
-
-                                    {/* ✏️ BOTÓN MODIFICAR VÁLVULA */}
-                                    {(userRole === "admin" ||
-                                      userRole === "supervisor") && (
-                                      <IconButton
-                                        size="small"
-                                        color="info"
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          setValvulaAEditar(valvula);
-                                          setModalValvulaModo("edit");
-                                          setModalValvulaOpen(true);
-                                        }}
-                                        sx={{
-                                          bgcolor: "#e0f2fe",
-                                          color: "#0284c7",
-                                          "&:hover": { bgcolor: "#bae6fd" },
-                                        }}
-                                      >
-                                        <EditIcon fontSize="small" />
-                                      </IconButton>
-                                    )}
-
-                                    {/* ❌ BOTÓN ELIMINAR VÁLVULA */}
-                                    {userRole === "admin" && (
-                                      <IconButton
-                                        size="small"
-                                        color="error"
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          handleEliminarValvula(
-                                            valvula.id_valvula,
-                                            valvula.modelo_valvula,
-                                          );
-                                        }}
-                                        sx={{
-                                          bgcolor: "#fee2e2",
-                                          color: "#dc2626",
-                                          "&:hover": { bgcolor: "#fecaca" },
-                                        }}
-                                      >
-                                        <DeleteIcon fontSize="small" />
-                                      </IconButton>
-                                    )}
-                                  </Box>
-                                </Box>
-
-                                <Divider
-                                  sx={{ mb: 1.5, borderStyle: "dashed" }}
-                                />
-
-                                {/* Rejilla interna con los detalles técnicos específicos */}
-                                <Grid container spacing={1}>
-                                  <Grid item xs={6}>
-                                    <Typography
-                                      variant="caption"
-                                      color="text.secondary"
-                                      display="block"
-                                    >
-                                      Norma Brida
-                                    </Typography>
-                                    <Typography
-                                      variant="body2"
-                                      fontWeight="medium"
-                                    >
-                                      {valvula.norma_brida || "N/A"}
-                                    </Typography>
-                                  </Grid>
-                                  <Grid item xs={6}>
-                                    <Typography
-                                      variant="caption"
-                                      color="text.secondary"
-                                      display="block"
-                                    >
-                                      Clase / PN
-                                    </Typography>
-                                    <Typography
-                                      variant="body2"
-                                      fontWeight="medium"
-                                    >
-                                      {valvula.clase_valvula
-                                        ? `Clase ${valvula.clase_valvula}`
-                                        : ""}{" "}
-                                      {valvula.pn ? `(PN ${valvula.pn})` : ""}
-                                    </Typography>
-                                  </Grid>
-                                  <Grid item xs={6} sx={{ mt: 0.5 }}>
-                                    <Typography
-                                      variant="caption"
-                                      color="text.secondary"
-                                      display="block"
-                                    >
-                                      Tipo Asiento
-                                    </Typography>
-                                    <Typography
-                                      variant="body2"
-                                      fontWeight="medium"
-                                    >
-                                      {valvula.tipo_asiento || "N/A"}
-                                    </Typography>
-                                  </Grid>
-                                  <Grid item xs={6} sx={{ mt: 0.5 }}>
-                                    <Typography
-                                      variant="caption"
-                                      color="text.secondary"
-                                      display="block"
-                                    >
-                                      Operación
-                                    </Typography>
-                                    <Typography
-                                      variant="body2"
-                                      fontWeight="medium"
-                                    >
-                                      {valvula.forma_operacion || "N/A"}
-                                    </Typography>
-                                  </Grid>
-
-                                  {valvula.tipo_compuerta && (
-                                    <Grid item xs={12} sx={{ mt: 0.5 }}>
-                                      <Typography
-                                        variant="caption"
-                                        color="text.secondary"
-                                        display="block"
-                                      >
-                                        Tipo Compuerta
-                                      </Typography>
-                                      <Typography
-                                        variant="body2"
-                                        fontWeight="medium"
-                                      >
-                                        {valvula.tipo_compuerta}
-                                      </Typography>
-                                    </Grid>
-                                  )}
-
-                                  {/* Detalles de la Tornillería */}
-                                  <Grid item xs={12} sx={{ mt: 1.5 }}>
-                                    <Box
-                                      sx={{
-                                        p: 1,
-                                        bgcolor: "#f1f5f9",
-                                        borderRadius: 1.5,
-                                        border: "1px solid #e2e8f0",
-                                      }}
-                                    >
-                                      <Typography
-                                        variant="caption"
-                                        fontWeight="bold"
-                                        color="text.primary"
-                                        display="block"
-                                        sx={{ mb: 0.5 }}
-                                      >
-                                        Especificaciones de Tornillería
-                                      </Typography>
-                                      <Typography
-                                        variant="caption"
-                                        color="text.secondary"
-                                      >
-                                        Diámetro:{" "}
-                                        <strong>
-                                          {valvula.diametro_tornillo
-                                            ? `${valvula.diametro_tornillo}mm`
-                                            : "N/A"}
-                                        </strong>{" "}
-                                        | Longitud:{" "}
-                                        <strong>
-                                          {valvula.longitud_tornillo
-                                            ? `${valvula.longitud_tornillo}mm`
-                                            : "N/A"}
-                                        </strong>{" "}
-                                        | Grado:{" "}
-                                        <strong>
-                                          {valvula.grado_tornillo
-                                            ? `Grado ${valvula.grado_tornillo}`
-                                            : "N/A"}
-                                        </strong>
-                                      </Typography>
-                                    </Box>
-                                  </Grid>
-                                </Grid>
-                              </CardContent>
-                            </Card>
-                          ))}
-                        </Box>
-                      )}
-                    </Grid>
-
-                    {/* BOMBAS Y MOTORES */}
-                    <Grid item xs={12} md={9}>
-                      <Typography
-                        variant="subtitle2"
-                        color="primary"
-                        fontWeight="bold"
+                      <Box
                         sx={{
-                          mb: 2,
+                          ml: "auto",
                           display: "flex",
                           alignItems: "center",
                           gap: 1,
                         }}
                       >
-                        <WaterDropIcon fontSize="small" /> Equipos de Bombeo e
-                        Impulsión ({linea.bombas ? linea.bombas.length : 0})
-                        {(userRole === "admin" ||
-                          userRole === "supervisor") && (
+                        {/* Botón para abrir la galería existente */}
+                        {linea.fotos_linea &&
+                        Array.isArray(linea.fotos_linea) &&
+                        linea.fotos_linea.length > 0 ? (
                           <Button
+                            icon={<PhotoCameraIcon />}
                             size="small"
+                            color="primary"
                             variant="outlined"
-                            onClick={() => {
-                              setIdLineaParaBomba(linea.id_linea_bombeo);
-                              setModalBombaModo("add");
-                              setBombaAEditar(null);
-                              setModalBombaOpen(true);
+                            clickable
+                            onClick={(e) => {
+                              // 🌟 Frenamos el clic aquí mismo para que el Accordion de fondo no se entere
+                              e.stopPropagation();
+                              abrirGaleriaMaster(
+                                linea.fotos_linea,
+                                `Línea: ${linea.nombre_linea_bombeo}`,
+                                "LINEA",
+                                e,
+                                linea.id_linea_bombeo,
+                              );
+                            }}
+                            sx={{
+                              fontWeight: "bold",
                             }}
                           >
-                            + Añadir Bomba
+                            Fotos ({linea.fotos_linea.length})
                           </Button>
+                        ) : (
+                          <Typography
+                            variant="caption"
+                            color="text.secondary"
+                            sx={{ fontStyle: "italic", mr: 1 }}
+                          >
+                            Sin registro fotográfico
+                          </Typography>
                         )}
-                      </Typography>
 
-                      {!linea.bombas || linea.bombas.length === 0 ? (
-                        <Typography variant="body2" color="text.secondary">
-                          Sin bombas registradas en esta línea.
-                        </Typography>
-                      ) : (
-                        <Grid container spacing={2}>
-                          {linea.bombas.map((bomba) => (
-                            <Grid item xs={12} sm={6} key={bomba.id_bomba}>
-                              <Card
+                        {/* 📸 ACCIÓN: SUBIR FOTO A LA LÍNEA (Visible para admin y supervisor) */}
+                        {(userRole === "admin" ||
+                          userRole === "supervisor") && (
+                          <IconButton
+                            color="primary"
+                            size="small"
+                            component="label"
+                            disabled={submitting}
+                            onClick={(e) => e.stopPropagation()} // Evita abrir el acordeón
+                            sx={{
+                              bgcolor: "#f0fdf4",
+                              color: "#16a34a",
+                              "&:hover": { bgcolor: "#dcfce7" },
+                            }}
+                          >
+                            <AddAPhotoIcon fontSize="small" />
+                            <input
+                              type="file"
+                              hidden
+                              accept="image/*"
+                              disabled={submitting}
+                              onChange={(e) =>
+                                handleSubirFotoLinea(linea.id_linea_bombeo, e)
+                              }
+                            />
+                          </IconButton>
+                        )}
+                      </Box>
+
+                      <Box sx={{ display: "flex", gap: 1 }}>
+                        {/* ✏️ BOTÓN MODIFICAR (Admin y Supervisor) */}
+                        {(userRole === "admin" ||
+                          userRole === "supervisor") && (
+                          <IconButton
+                            size="small"
+                            color="info"
+                            onClick={(e) => {
+                              e.stopPropagation(); // Evita abrir o cerrar el acordeón
+                              setModalLineaModo("edit");
+                              setLineaAEditar(linea);
+                              setModalLineaOpen(true);
+                            }}
+                          >
+                            <EditIcon fontSize="small" />
+                          </IconButton>
+                        )}
+
+                        {/* ❌ BOTÓN ELIMINAR (Estricto: Solo Admin) */}
+                        {userRole === "admin" && (
+                          <IconButton
+                            size="small"
+                            color="error"
+                            onClick={(e) => {
+                              e.stopPropagation(); // Evita abrir o cerrar el acordeón
+                              handleEliminarLinea(
+                                linea.id_linea_bombeo,
+                                linea.nombre_linea_bombeo,
+                              );
+                            }}
+                          >
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        )}
+                      </Box>
+                    </Box>
+                  </AccordionSummary>
+
+                  {/* 🔵 DETALLES DE LA LÍNEA */}
+                  <AccordionDetails sx={{ p: 3, backgroundColor: "#ffffff" }}>
+                    {linea.observaciones_linea_bombeo && (
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ mb: 3, fontStyle: "italic" }}
+                      >
+                        <strong>Observaciones:</strong>{" "}
+                        {linea.observaciones_linea_bombeo}
+                      </Typography>
+                    )}
+
+                    <Grid container spacing={3}>
+                      {/* VÁLVULAS */}
+                      {/* 🔴 COLUMNA IZQUIERDA: VÁLVULAS CON TODOS SUS DETALLES */}
+                      <Grid item xs={12} md={3.5}>
+                        <Typography
+                          variant="subtitle2"
+                          color="primary"
+                          fontWeight="bold"
+                          sx={{
+                            mb: 2,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                          }}
+                        >
+                          <PropaneIcon fontSize="small" /> Válvulas de Control (
+                          {linea.valvulas ? linea.valvulas.length : 0})
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "flex-end",
+                              mb: 0,
+                            }}
+                          >
+                            {/* BOTÓN REGISTRAR VÁLVULA (Cabecera de la sección Válvulas) */}
+                            {(userRole === "admin" ||
+                              userRole === "supervisor") && (
+                              <Button
+                                size="small"
                                 variant="outlined"
-                                sx={{
-                                  borderColor: "#cbd5e1",
-                                  borderRadius: 2,
-                                  boxShadow: "0 2px 5px rgba(0,0,0,0.03)",
-                                  height: "100%",
-                                  display: "flex",
-                                  flexDirection: "column",
+                                onClick={() => {
+                                  setIdLineaParaValvula(linea.id_linea_bombeo);
+                                  setModalValvulaModo("add");
+                                  setValvulaAEditar(null);
+                                  setModalValvulaOpen(true);
                                 }}
                               >
-                                {/* CUERPO SUPERIOR: LA BOMBA */}
-                                <CardContent sx={{ flexGrow: 1, pb: 1 }}>
+                                + Añadir Válvula
+                              </Button>
+                            )}
+                          </Box>
+                        </Typography>
+
+                        {!linea.valvulas || linea.valvulas.length === 0 ? (
+                          <Typography variant="body2" color="text.secondary">
+                            Sin válvulas registradas.
+                          </Typography>
+                        ) : (
+                          <Box
+                            sx={{
+                              display: "flex",
+                              flexDirection: "column",
+                              gap: 2,
+                            }}
+                          >
+                            {linea.valvulas.map((valvula) => (
+                              <Card
+                                key={valvula.id_valvula}
+                                variant="outlined"
+                                sx={{
+                                  bgcolor: "#fafafa",
+                                  borderColor: "#cbd5e1",
+                                  borderRadius: 2,
+                                  boxShadow: "0 2px 4px rgba(0,0,0,0.02)",
+                                }}
+                              >
+                                <CardContent
+                                  sx={{ p: 2.5, "&:last-child": { pb: 2.5 } }}
+                                >
+                                  {/* Encabezado Principal */}
                                   <Box
                                     sx={{
                                       display: "flex",
                                       justifyContent: "space-between",
                                       alignItems: "flex-start",
-                                      mb: 1,
+                                      mb: 1.5,
                                     }}
                                   >
-                                    <Typography
-                                      variant="subtitle1"
-                                      fontWeight="bold"
-                                      color="primary.dark"
-                                    >
-                                      Bomba de {bomba.tipo_bomba}
-                                    </Typography>
+                                    <Box>
+                                      <Typography
+                                        variant="subtitle2"
+                                        fontWeight="bold"
+                                        color="primary.main"
+                                      >
+                                        Válvula de {valvula.tipo_valvula}
+                                      </Typography>
+                                      <Typography
+                                        variant="caption"
+                                        color="text.secondary"
+                                        sx={{ display: "block", mt: -0.5 }}
+                                      >
+                                        {valvula.marca_valvula} • Mod.{" "}
+                                        {valvula.modelo_valvula}
+                                      </Typography>
+                                    </Box>
 
+                                    {/* 🛠️ Contenedor de Acciones (Fotos, Modificar, Eliminar) */}
+                                    {/* 🛠️ Contenedor de Acciones de la Válvula (Fotos, Modificar, Eliminar) */}
                                     <Box
                                       sx={{
                                         display: "flex",
-                                        gap: 0.5,
+                                        gap: 1,
                                         alignItems: "center",
+                                        ml: "auto",
                                       }}
                                     >
-                                      {/* 📸 BOTÓN DE GALERÍA DE FOTOS */}
-                                      {bomba.fotos_bomba &&
-                                        bomba.fotos_bomba.length > 0 && (
-                                          <IconButton
-                                            size="small"
-                                            color="primary"
-                                            onClick={(e) =>
-                                              abrirGaleriaMaster(
-                                                bomba.fotos_bomba,
-                                                `Bomba ${bomba.marca_bomba}`,
-                                                "BOMBA",
-                                                e,
-                                              )
-                                            }
-                                          >
-                                            <PhotoCameraIcon fontSize="small" />
-                                          </IconButton>
-                                        )}
+                                      {/* 📸 Gestión Visual de Fotos */}
+                                      {valvula.fotos_valvula &&
+                                      Array.isArray(valvula.fotos_valvula) &&
+                                      valvula.fotos_valvula.length > 0 ? (
+                                        <Chip
+                                          icon={<PhotoCameraIcon />}
+                                          label={`${valvula.fotos_valvula.length} Fotos`}
+                                          size="small"
+                                          color="primary"
+                                          variant="outlined"
+                                          clickable
+                                          onClick={(e) => {
+                                            e.stopPropagation(); // Frenamos el burbujeo en la UI
+                                            abrirGaleriaMaster(
+                                              valvula.fotos_valvula,
+                                              `Válvula de la Línea`,
+                                              "VALVULA",
+                                              e,
+                                            );
+                                          }}
+                                          sx={{
+                                            fontWeight: "bold",
+                                            "&:hover": { bgcolor: "#e0f2fe" },
+                                          }}
+                                        />
+                                      ) : (
+                                        <Typography
+                                          variant="caption"
+                                          color="text.secondary"
+                                          sx={{ fontStyle: "italic", mr: 1 }}
+                                        >
+                                          Sin registro fotográfico
+                                        </Typography>
+                                      )}
 
-                                      {/* 🟢 NUEVO: INPUT PARA SUBIR FOTO (Visible para Admin y Supervisor) */}
+                                      {/* 📸 ACCIÓN: SUBIR FOTO A LA VÁLVULA (Visible para Admin y Supervisor) */}
                                       {(userRole === "admin" ||
                                         userRole === "supervisor") && (
                                         <IconButton
@@ -1605,12 +1322,12 @@ const LineasBombeoTab = ({ idEstacion, userRole }) => {
                                           <input
                                             type="file"
                                             hidden
-                                            multiple
+                                            multiple // Permite seleccionar más de una foto gracias a tu upload.array
                                             accept="image/*"
                                             disabled={submitting}
                                             onChange={(e) =>
-                                              handleSubirFotoBomba(
-                                                bomba.id_bomba,
+                                              handleSubirFotoValvula(
+                                                valvula.id_valvula,
                                                 e,
                                               )
                                             }
@@ -1618,445 +1335,762 @@ const LineasBombeoTab = ({ idEstacion, userRole }) => {
                                         </IconButton>
                                       )}
 
-                                      {/* ✏️ BOTÓN MODIFICAR BOMBA */}
+                                      {/* ✏️ BOTÓN MODIFICAR VÁLVULA */}
                                       {(userRole === "admin" ||
                                         userRole === "supervisor") && (
                                         <IconButton
                                           size="small"
                                           color="info"
-                                          onClick={() => {
-                                            setBombaAEditar(bomba);
-                                            setModalBombaModo("edit");
-                                            setModalBombaOpen(true);
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            setValvulaAEditar(valvula);
+                                            setModalValvulaModo("edit");
+                                            setModalValvulaOpen(true);
+                                          }}
+                                          sx={{
+                                            bgcolor: "#e0f2fe",
+                                            color: "#0284c7",
+                                            "&:hover": { bgcolor: "#bae6fd" },
                                           }}
                                         >
                                           <EditIcon fontSize="small" />
                                         </IconButton>
                                       )}
 
-                                      {/* ❌ BOTÓN ELIMINAR BOMBA */}
+                                      {/* ❌ BOTÓN ELIMINAR VÁLVULA */}
                                       {userRole === "admin" && (
                                         <IconButton
                                           size="small"
                                           color="error"
-                                          onClick={() =>
-                                            handleEliminarBomba(
-                                              bomba.id_bomba,
-                                              bomba.modelo_bomba,
-                                            )
-                                          }
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleEliminarValvula(
+                                              valvula.id_valvula,
+                                              valvula.modelo_valvula,
+                                            );
+                                          }}
+                                          sx={{
+                                            bgcolor: "#fee2e2",
+                                            color: "#dc2626",
+                                            "&:hover": { bgcolor: "#fecaca" },
+                                          }}
                                         >
                                           <DeleteIcon fontSize="small" />
                                         </IconButton>
                                       )}
-
-                                      {/* --- SEPARADOR VISUAL --- */}
-                                      <Box
-                                        sx={{
-                                          width: "1px",
-                                          height: "24px",
-                                          bgcolor: "divider",
-                                          mx: 0.5,
-                                        }}
-                                      />
-
-                                      {/* ========================================================= */}
-                                      {/* 📄 BOTÓN UNIFICADO DE FICHA TÉCNICA (ANTI-ERRORES)        */}
-                                      {/* ========================================================= */}
-                                      <Button
-                                        size="small"
-                                        variant="text"
-                                        onClick={() =>
-                                          handleVerFichaBomba(bomba)
-                                        }
-                                        sx={{
-                                          fontSize: "0.75rem",
-                                          fontWeight: "bold",
-                                          textTransform: "none",
-                                        }}
-                                      >
-                                        Ficha
-                                      </Button>
-                                      {/* ========================================================= */}
                                     </Box>
                                   </Box>
 
-                                  <Typography
-                                    variant="caption"
-                                    color="text.secondary"
-                                    display="block"
-                                    sx={{ mt: -1, mb: 1.5 }}
-                                  >
-                                    {bomba.marca_bomba} • Mod.{" "}
-                                    {bomba.modelo_bomba}
-                                  </Typography>
+                                  <Divider
+                                    sx={{ mb: 1.5, borderStyle: "dashed" }}
+                                  />
 
-                                  <Grid
-                                    container
-                                    spacing={1}
-                                    sx={{
-                                      bgcolor: "#f8fafc",
-                                      p: 1,
-                                      borderRadius: 1.5,
-                                      border: "1px solid #e2e8f0",
-                                    }}
-                                  >
+                                  {/* Rejilla interna con los detalles técnicos específicos */}
+                                  <Grid container spacing={1}>
                                     <Grid item xs={6}>
                                       <Typography
                                         variant="caption"
                                         color="text.secondary"
+                                        display="block"
                                       >
-                                        Caudal Nominal
-                                      </Typography>
-                                      <Typography
-                                        variant="body2"
-                                        fontWeight="bold"
-                                        color="success.main"
-                                      >
-                                        {bomba.q} L/s
-                                      </Typography>
-                                    </Grid>
-                                    <Grid item xs={6}>
-                                      <Typography
-                                        variant="caption"
-                                        color="text.secondary"
-                                      >
-                                        Nº de Etapas
+                                        Norma Brida
                                       </Typography>
                                       <Typography
                                         variant="body2"
                                         fontWeight="medium"
                                       >
-                                        {bomba.num_etapa || "N/A"}
+                                        {valvula.norma_brida || "N/A"}
                                       </Typography>
                                     </Grid>
-                                  </Grid>
-                                </CardContent>
-
-                                <Divider
-                                  sx={{ mx: 2, borderStyle: "dashed" }}
-                                />
-
-                                {/* CUERPO INFERIOR: EL MOTOR ASOCIADO */}
-                                <CardContent
-                                  sx={{ pt: 1.5, backgroundColor: "#fbfbfb" }}
-                                >
-                                  <Typography
-                                    variant="caption"
-                                    fontWeight="bold"
-                                    color="text.secondary"
-                                    sx={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                      gap: 0.5,
-                                      mb: 1.5,
-                                    }}
-                                  >
-                                    <SettingsIcon fontSize="small" /> Motor
-                                    Eléctrico Acoplado
-                                    {/* Botón Añadir Motor (Solo Admin/Supervisor y si la bomba no tiene motor) */}
-                                    {(!bomba.motores ||
-                                      bomba.motores.length === 0) &&
-                                      (userRole === "admin" ||
-                                        userRole === "supervisor") && (
-                                        <Button
-                                          size="small"
-                                          variant="outlined"
-                                          color="primary"
-                                          sx={{
-                                            ml: 1,
-                                            p: 0.2,
-                                            fontSize: "0.65rem",
-                                            minWidth: 0,
-                                          }}
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            setIdBombaParaMotor(bomba.id_bomba);
-                                            setModalBaseMotorModo("add");
-                                            setMotorCrudAEditar(null);
-                                            setModalBaseMotorOpen(true);
-                                          }}
-                                        >
-                                          + Añadir
-                                        </Button>
-                                      )}
-                                  </Typography>
-
-                                  {!bomba.motores ||
-                                  bomba.motores.length === 0 ? (
-                                    <Typography
-                                      variant="body2"
-                                      color="error.main"
-                                      sx={{ fontStyle: "italic", pl: 1 }}
-                                    >
-                                      Sin motor asignado
-                                    </Typography>
-                                  ) : (
-                                    bomba.motores.map((motor) => (
-                                      <Box
-                                        key={motor.id_motor}
-                                        sx={{
-                                          pl: 1.5,
-                                          borderLeft: "3px solid #b45309",
-                                        }}
+                                    <Grid item xs={6}>
+                                      <Typography
+                                        variant="caption"
+                                        color="text.secondary"
+                                        display="block"
                                       >
-                                        <Box
-                                          sx={{
-                                            display: "flex",
-                                            justifyContent: "space-between",
-                                            alignItems: "center",
-                                          }}
-                                        >
-                                          <Typography
-                                            variant="body2"
-                                            fontWeight="bold"
-                                            color="text.primary"
-                                          >
-                                            {motor.marca_motor} (
-                                            {motor.tipo_motor})
-                                          </Typography>
+                                        Clase / PN
+                                      </Typography>
+                                      <Typography
+                                        variant="body2"
+                                        fontWeight="medium"
+                                      >
+                                        {valvula.clase_valvula
+                                          ? `Clase ${valvula.clase_valvula}`
+                                          : ""}{" "}
+                                        {valvula.pn ? `(PN ${valvula.pn})` : ""}
+                                      </Typography>
+                                    </Grid>
+                                    <Grid item xs={6} sx={{ mt: 0.5 }}>
+                                      <Typography
+                                        variant="caption"
+                                        color="text.secondary"
+                                        display="block"
+                                      >
+                                        Tipo Asiento
+                                      </Typography>
+                                      <Typography
+                                        variant="body2"
+                                        fontWeight="medium"
+                                      >
+                                        {valvula.tipo_asiento || "N/A"}
+                                      </Typography>
+                                    </Grid>
+                                    <Grid item xs={6} sx={{ mt: 0.5 }}>
+                                      <Typography
+                                        variant="caption"
+                                        color="text.secondary"
+                                        display="block"
+                                      >
+                                        Operación
+                                      </Typography>
+                                      <Typography
+                                        variant="body2"
+                                        fontWeight="medium"
+                                      >
+                                        {valvula.forma_operacion || "N/A"}
+                                      </Typography>
+                                    </Grid>
 
-                                          {/* Botones CRUD Motor */}
-                                          {(userRole === "admin" ||
-                                            userRole === "supervisor") && (
-                                            <IconButton
-                                              size="small"
-                                              color="info"
-                                              onClick={(e) => {
-                                                e.stopPropagation();
-                                                setMotorCrudAEditar(motor);
-                                                setModalBaseMotorModo("edit");
-                                                setModalBaseMotorOpen(true);
-                                              }}
-                                            >
-                                              <EditIcon
-                                                sx={{ fontSize: "1rem" }}
-                                              />
-                                            </IconButton>
-                                          )}
-                                          {userRole === "admin" && (
-                                            <IconButton
-                                              size="small"
-                                              color="error"
-                                              onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleEliminarMotor(
-                                                  motor.id_motor,
-                                                  motor.codigo_motor,
-                                                );
-                                              }}
-                                            >
-                                              <DeleteIcon
-                                                sx={{ fontSize: "1rem" }}
-                                              />
-                                            </IconButton>
-                                          )}
-
-                                          <Box
-                                            sx={{ display: "flex", gap: 0.5 }}
-                                          >
-                                            {motor.fotos_motor &&
-                                              motor.fotos_motor.length > 0 && (
-                                                <IconButton
-                                                  size="small"
-                                                  color="warning"
-                                                  onClick={(e) =>
-                                                    abrirGaleriaMaster(
-                                                      motor.fotos_motor,
-                                                      `Motor ${motor.marca_motor}`,
-                                                      "MOTOR",
-                                                      e,
-                                                    )
-                                                  }
-                                                >
-                                                  <PhotoCameraIcon fontSize="small" />
-                                                </IconButton>
-                                              )}
-
-                                            {/* 🟢 Registrar Nuevas Fotos (Icono verde con input oculto - Admin/Supervisor) */}
-                                            {(userRole === "admin" ||
-                                              userRole === "supervisor") && (
-                                              <IconButton
-                                                color="primary"
-                                                size="small"
-                                                component="label"
-                                                disabled={submitting}
-                                                onClick={(e) =>
-                                                  e.stopPropagation()
-                                                }
-                                                sx={{
-                                                  bgcolor: "#f0fdf4",
-                                                  color: "#16a34a",
-                                                  "&:hover": {
-                                                    bgcolor: "#dcfce7",
-                                                  },
-                                                }}
-                                              >
-                                                <AddAPhotoIcon fontSize="small" />
-                                                <input
-                                                  type="file"
-                                                  hidden
-                                                  multiple
-                                                  accept="image/*"
-                                                  disabled={submitting}
-                                                  onChange={(e) =>
-                                                    handleSubirFotoMotor(
-                                                      motor.id_motor,
-                                                      e,
-                                                    )
-                                                  }
-                                                />
-                                              </IconButton>
-                                            )}
-
-                                            {/* Botón Detalles del Motor */}
-                                            <Button
-                                              size="small"
-                                              sx={{
-                                                fontSize: "0.75rem",
-                                                fontWeight: "bold",
-                                                color: "#ea580c",
-                                              }}
-                                              onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleVerDetalleMotor(motor);
-                                              }}
-                                            >
-                                              Detalles
-                                            </Button>
-                                          </Box>
-                                        </Box>
-
+                                    {valvula.tipo_compuerta && (
+                                      <Grid item xs={12} sx={{ mt: 0.5 }}>
                                         <Typography
                                           variant="caption"
                                           color="text.secondary"
                                           display="block"
-                                          sx={{ mb: 1 }}
                                         >
-                                          Código:{" "}
-                                          <code>{motor.codigo_motor}</code>
+                                          Tipo Compuerta
                                         </Typography>
+                                        <Typography
+                                          variant="body2"
+                                          fontWeight="medium"
+                                        >
+                                          {valvula.tipo_compuerta}
+                                        </Typography>
+                                      </Grid>
+                                    )}
 
-                                        {/* 🌟 DATOS DE LA TABLA MADRE 'MOTOR' */}
-                                        <Box
-                                          sx={{
-                                            display: "flex",
-                                            justifyContent: "center",
-                                            gap: 0.8,
-                                            flexWrap: "wrap",
-                                            mt: 0.5,
-                                          }}
+                                    {/* Detalles de la Tornillería */}
+                                    <Grid item xs={12} sx={{ mt: 1.5 }}>
+                                      <Box
+                                        sx={{
+                                          p: 1,
+                                          bgcolor: "#f1f5f9",
+                                          borderRadius: 1.5,
+                                          border: "1px solid #e2e8f0",
+                                        }}
+                                      >
+                                        <Typography
+                                          variant="caption"
+                                          fontWeight="bold"
+                                          color="text.primary"
+                                          display="block"
+                                          sx={{ mb: 0.5 }}
                                         >
-                                          {/* Tipo de Corriente: 0 = Alterna, 1 = Continua */}
-                                          <Chip
+                                          Especificaciones de Tornillería
+                                        </Typography>
+                                        <Typography
+                                          variant="caption"
+                                          color="text.secondary"
+                                        >
+                                          Diámetro:{" "}
+                                          <strong>
+                                            {valvula.diametro_tornillo
+                                              ? `${valvula.diametro_tornillo}mm`
+                                              : "N/A"}
+                                          </strong>{" "}
+                                          | Longitud:{" "}
+                                          <strong>
+                                            {valvula.longitud_tornillo
+                                              ? `${valvula.longitud_tornillo}mm`
+                                              : "N/A"}
+                                          </strong>{" "}
+                                          | Grado:{" "}
+                                          <strong>
+                                            {valvula.grado_tornillo
+                                              ? `Grado ${valvula.grado_tornillo}`
+                                              : "N/A"}
+                                          </strong>
+                                        </Typography>
+                                      </Box>
+                                    </Grid>
+                                  </Grid>
+                                </CardContent>
+                              </Card>
+                            ))}
+                          </Box>
+                        )}
+                      </Grid>
+
+                      {/* BOMBAS Y MOTORES */}
+                      <Grid item xs={12} md={9}>
+                        <Typography
+                          variant="subtitle2"
+                          color="primary"
+                          fontWeight="bold"
+                          sx={{
+                            mb: 2,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                          }}
+                        >
+                          <WaterDropIcon fontSize="small" /> Equipos de Bombeo e
+                          Impulsión ({linea.bombas ? linea.bombas.length : 0})
+                          {(userRole === "admin" ||
+                            userRole === "supervisor") && (
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              onClick={() => {
+                                setIdLineaParaBomba(linea.id_linea_bombeo);
+                                setModalBombaModo("add");
+                                setBombaAEditar(null);
+                                setModalBombaOpen(true);
+                              }}
+                            >
+                              + Añadir Bomba
+                            </Button>
+                          )}
+                        </Typography>
+
+                        {!linea.bombas || linea.bombas.length === 0 ? (
+                          <Typography variant="body2" color="text.secondary">
+                            Sin bombas registradas en esta línea.
+                          </Typography>
+                        ) : (
+                          <Grid container spacing={2}>
+                            {linea.bombas.map((bomba) => (
+                              <Grid item xs={12} sm={6} key={bomba.id_bomba}>
+                                <Card
+                                  variant="outlined"
+                                  sx={{
+                                    borderColor: "#cbd5e1",
+                                    borderRadius: 2,
+                                    boxShadow: "0 2px 5px rgba(0,0,0,0.03)",
+                                    height: "100%",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                  }}
+                                >
+                                  {/* CUERPO SUPERIOR: LA BOMBA */}
+                                  <CardContent sx={{ flexGrow: 1, pb: 1 }}>
+                                    <Box
+                                      sx={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "flex-start",
+                                        mb: 1,
+                                      }}
+                                    >
+                                      <Typography
+                                        variant="subtitle1"
+                                        fontWeight="bold"
+                                        color="primary.dark"
+                                      >
+                                        Bomba de {bomba.tipo_bomba}
+                                      </Typography>
+
+                                      <Box
+                                        sx={{
+                                          display: "flex",
+                                          gap: 0.5,
+                                          alignItems: "center",
+                                        }}
+                                      >
+                                        {/* 📸 BOTÓN DE GALERÍA DE FOTOS */}
+                                        {bomba.fotos_bomba &&
+                                          bomba.fotos_bomba.length > 0 && (
+                                            <IconButton
+                                              size="small"
+                                              color="primary"
+                                              onClick={(e) =>
+                                                abrirGaleriaMaster(
+                                                  bomba.fotos_bomba,
+                                                  `Bomba ${bomba.marca_bomba}`,
+                                                  "BOMBA",
+                                                  e,
+                                                )
+                                              }
+                                            >
+                                              <PhotoCameraIcon fontSize="small" />
+                                            </IconButton>
+                                          )}
+
+                                        {/* 🟢 NUEVO: INPUT PARA SUBIR FOTO (Visible para Admin y Supervisor) */}
+                                        {(userRole === "admin" ||
+                                          userRole === "supervisor") && (
+                                          <IconButton
+                                            color="primary"
                                             size="small"
-                                            label={
-                                              motor.tipo_corriente === 0
-                                                ? "Corriente Alterna (CA)"
-                                                : "Corriente Continua (CC)"
-                                            }
+                                            component="label"
+                                            disabled={submitting}
+                                            onClick={(e) => e.stopPropagation()}
                                             sx={{
-                                              height: 20,
-                                              fontSize: "0.65rem",
-                                              bgcolor: "#e2e8f0",
+                                              bgcolor: "#f0fdf4",
+                                              color: "#16a34a",
+                                              "&:hover": { bgcolor: "#dcfce7" },
                                             }}
-                                          />
-                                        </Box>
+                                          >
+                                            <AddAPhotoIcon fontSize="small" />
+                                            <input
+                                              type="file"
+                                              hidden
+                                              multiple
+                                              accept="image/*"
+                                              disabled={submitting}
+                                              onChange={(e) =>
+                                                handleSubirFotoBomba(
+                                                  bomba.id_bomba,
+                                                  e,
+                                                )
+                                              }
+                                            />
+                                          </IconButton>
+                                        )}
+
+                                        {/* ✏️ BOTÓN MODIFICAR BOMBA */}
+                                        {(userRole === "admin" ||
+                                          userRole === "supervisor") && (
+                                          <IconButton
+                                            size="small"
+                                            color="info"
+                                            onClick={() => {
+                                              setBombaAEditar(bomba);
+                                              setModalBombaModo("edit");
+                                              setModalBombaOpen(true);
+                                            }}
+                                          >
+                                            <EditIcon fontSize="small" />
+                                          </IconButton>
+                                        )}
+
+                                        {/* ❌ BOTÓN ELIMINAR BOMBA */}
+                                        {userRole === "admin" && (
+                                          <IconButton
+                                            size="small"
+                                            color="error"
+                                            onClick={() =>
+                                              handleEliminarBomba(
+                                                bomba.id_bomba,
+                                                bomba.modelo_bomba,
+                                              )
+                                            }
+                                          >
+                                            <DeleteIcon fontSize="small" />
+                                          </IconButton>
+                                        )}
+
+                                        {/* --- SEPARADOR VISUAL --- */}
                                         <Box
                                           sx={{
-                                            display: "flex",
-                                            justifyContent: "center",
-                                            gap: 0.8,
-                                            flexWrap: "wrap",
-                                            mt: 0.5,
+                                            width: "1px",
+                                            height: "24px",
+                                            bgcolor: "divider",
+                                            mx: 0.5,
                                           }}
-                                        >
-                                          {/* Fases: 0 = Monofásico, 1 = Trifásico */}
-                                          <Chip
-                                            size="small"
-                                            label={
-                                              motor.mono_tri === 1
-                                                ? `Trifásico (${motor.num_fases} Fases)`
-                                                : `Monofásico (${motor.num_fases} Fases)`
-                                            }
-                                            sx={{
-                                              height: 20,
-                                              fontSize: "0.65rem",
-                                              bgcolor: "#e2e8f0",
-                                            }}
-                                          />
-                                        </Box>
-                                        <Box
+                                        />
+
+                                        {/* ========================================================= */}
+                                        {/* 📄 BOTÓN UNIFICADO DE FICHA TÉCNICA (ANTI-ERRORES)        */}
+                                        {/* ========================================================= */}
+                                        <Button
+                                          size="small"
+                                          variant="text"
+                                          onClick={() =>
+                                            handleVerFichaBomba(bomba)
+                                          }
                                           sx={{
-                                            display: "flex",
-                                            gap: 0.8,
-                                            flexWrap: "wrap",
-                                            mt: 0.5,
+                                            fontSize: "0.75rem",
+                                            fontWeight: "bold",
+                                            textTransform: "none",
                                           }}
                                         >
-                                          {/* Sincronismo: 0 = Asíncrono, 1 = Síncrono */}
-                                          <Chip
+                                          Ficha
+                                        </Button>
+                                        {/* ========================================================= */}
+                                      </Box>
+                                    </Box>
+
+                                    <Typography
+                                      variant="caption"
+                                      color="text.secondary"
+                                      display="block"
+                                      sx={{ mt: -1, mb: 1.5 }}
+                                    >
+                                      {bomba.marca_bomba} • Mod.{" "}
+                                      {bomba.modelo_bomba}
+                                    </Typography>
+
+                                    <Grid
+                                      container
+                                      spacing={1}
+                                      sx={{
+                                        bgcolor: "#f8fafc",
+                                        p: 1,
+                                        borderRadius: 1.5,
+                                        border: "1px solid #e2e8f0",
+                                      }}
+                                    >
+                                      <Grid item xs={6}>
+                                        <Typography
+                                          variant="caption"
+                                          color="text.secondary"
+                                        >
+                                          Caudal Nominal
+                                        </Typography>
+                                        <Typography
+                                          variant="body2"
+                                          fontWeight="bold"
+                                          color="success.main"
+                                        >
+                                          {bomba.q} L/s
+                                        </Typography>
+                                      </Grid>
+                                      <Grid item xs={6}>
+                                        <Typography
+                                          variant="caption"
+                                          color="text.secondary"
+                                        >
+                                          Nº de Etapas
+                                        </Typography>
+                                        <Typography
+                                          variant="body2"
+                                          fontWeight="medium"
+                                        >
+                                          {bomba.num_etapa || "N/A"}
+                                        </Typography>
+                                      </Grid>
+                                    </Grid>
+                                  </CardContent>
+
+                                  <Divider
+                                    sx={{ mx: 2, borderStyle: "dashed" }}
+                                  />
+
+                                  {/* CUERPO INFERIOR: EL MOTOR ASOCIADO */}
+                                  <CardContent
+                                    sx={{ pt: 1.5, backgroundColor: "#fbfbfb" }}
+                                  >
+                                    <Typography
+                                      variant="caption"
+                                      fontWeight="bold"
+                                      color="text.secondary"
+                                      sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 0.5,
+                                        mb: 1.5,
+                                      }}
+                                    >
+                                      <SettingsIcon fontSize="small" /> Motor
+                                      Eléctrico Acoplado
+                                      {/* Botón Añadir Motor (Solo Admin/Supervisor y si la bomba no tiene motor) */}
+                                      {(!bomba.motores ||
+                                        bomba.motores.length === 0) &&
+                                        (userRole === "admin" ||
+                                          userRole === "supervisor") && (
+                                          <Button
                                             size="small"
-                                            label={
-                                              motor.asin_sin === 1
-                                                ? "Síncrono"
-                                                : "Asíncrono"
-                                            }
-                                            color="warning"
                                             variant="outlined"
+                                            color="primary"
                                             sx={{
-                                              height: 20,
+                                              ml: 1,
+                                              p: 0.2,
                                               fontSize: "0.65rem",
-                                              fontWeight: "bold",
+                                              minWidth: 0,
                                             }}
-                                          />
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              setIdBombaParaMotor(
+                                                bomba.id_bomba,
+                                              );
+                                              setModalBaseMotorModo("add");
+                                              setMotorCrudAEditar(null);
+                                              setModalBaseMotorOpen(true);
+                                            }}
+                                          >
+                                            + Añadir
+                                          </Button>
+                                        )}
+                                    </Typography>
 
-                                          {/* Universal: Si es 1, mostramos el chip */}
-                                          {motor.universal === 1 && (
+                                    {!bomba.motores ||
+                                    bomba.motores.length === 0 ? (
+                                      <Typography
+                                        variant="body2"
+                                        color="error.main"
+                                        sx={{ fontStyle: "italic", pl: 1 }}
+                                      >
+                                        Sin motor asignado
+                                      </Typography>
+                                    ) : (
+                                      bomba.motores.map((motor) => (
+                                        <Box
+                                          key={motor.id_motor}
+                                          sx={{
+                                            pl: 1.5,
+                                            borderLeft: "3px solid #b45309",
+                                          }}
+                                        >
+                                          <Box
+                                            sx={{
+                                              display: "flex",
+                                              justifyContent: "space-between",
+                                              alignItems: "center",
+                                            }}
+                                          >
+                                            <Typography
+                                              variant="body2"
+                                              fontWeight="bold"
+                                              color="text.primary"
+                                            >
+                                              {motor.marca_motor} (
+                                              {motor.tipo_motor})
+                                            </Typography>
+
+                                            {/* Botones CRUD Motor */}
+                                            {(userRole === "admin" ||
+                                              userRole === "supervisor") && (
+                                              <IconButton
+                                                size="small"
+                                                color="info"
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  setMotorCrudAEditar(motor);
+                                                  setModalBaseMotorModo("edit");
+                                                  setModalBaseMotorOpen(true);
+                                                }}
+                                              >
+                                                <EditIcon
+                                                  sx={{ fontSize: "1rem" }}
+                                                />
+                                              </IconButton>
+                                            )}
+                                            {userRole === "admin" && (
+                                              <IconButton
+                                                size="small"
+                                                color="error"
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  handleEliminarMotor(
+                                                    motor.id_motor,
+                                                    motor.codigo_motor,
+                                                  );
+                                                }}
+                                              >
+                                                <DeleteIcon
+                                                  sx={{ fontSize: "1rem" }}
+                                                />
+                                              </IconButton>
+                                            )}
+
+                                            <Box
+                                              sx={{ display: "flex", gap: 0.5 }}
+                                            >
+                                              {motor.fotos_motor &&
+                                                motor.fotos_motor.length >
+                                                  0 && (
+                                                  <IconButton
+                                                    size="small"
+                                                    color="warning"
+                                                    onClick={(e) =>
+                                                      abrirGaleriaMaster(
+                                                        motor.fotos_motor,
+                                                        `Motor ${motor.marca_motor}`,
+                                                        "MOTOR",
+                                                        e,
+                                                      )
+                                                    }
+                                                  >
+                                                    <PhotoCameraIcon fontSize="small" />
+                                                  </IconButton>
+                                                )}
+
+                                              {/* 🟢 Registrar Nuevas Fotos (Icono verde con input oculto - Admin/Supervisor) */}
+                                              {(userRole === "admin" ||
+                                                userRole === "supervisor") && (
+                                                <IconButton
+                                                  color="primary"
+                                                  size="small"
+                                                  component="label"
+                                                  disabled={submitting}
+                                                  onClick={(e) =>
+                                                    e.stopPropagation()
+                                                  }
+                                                  sx={{
+                                                    bgcolor: "#f0fdf4",
+                                                    color: "#16a34a",
+                                                    "&:hover": {
+                                                      bgcolor: "#dcfce7",
+                                                    },
+                                                  }}
+                                                >
+                                                  <AddAPhotoIcon fontSize="small" />
+                                                  <input
+                                                    type="file"
+                                                    hidden
+                                                    multiple
+                                                    accept="image/*"
+                                                    disabled={submitting}
+                                                    onChange={(e) =>
+                                                      handleSubirFotoMotor(
+                                                        motor.id_motor,
+                                                        e,
+                                                      )
+                                                    }
+                                                  />
+                                                </IconButton>
+                                              )}
+
+                                              {/* Botón Detalles del Motor */}
+                                              <Button
+                                                size="small"
+                                                sx={{
+                                                  fontSize: "0.75rem",
+                                                  fontWeight: "bold",
+                                                  color: "#ea580c",
+                                                }}
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  handleVerDetalleMotor(motor);
+                                                }}
+                                              >
+                                                Detalles
+                                              </Button>
+                                            </Box>
+                                          </Box>
+
+                                          <Typography
+                                            variant="caption"
+                                            color="text.secondary"
+                                            display="block"
+                                            sx={{ mb: 1 }}
+                                          >
+                                            Código:{" "}
+                                            <code>{motor.codigo_motor}</code>
+                                          </Typography>
+
+                                          {/* 🌟 DATOS DE LA TABLA MADRE 'MOTOR' */}
+                                          <Box
+                                            sx={{
+                                              display: "flex",
+                                              justifyContent: "center",
+                                              gap: 0.8,
+                                              flexWrap: "wrap",
+                                              mt: 0.5,
+                                            }}
+                                          >
+                                            {/* Tipo de Corriente: 0 = Alterna, 1 = Continua */}
                                             <Chip
                                               size="small"
-                                              label="Universal"
+                                              label={
+                                                motor.tipo_corriente === 0
+                                                  ? "Corriente Alterna (CA)"
+                                                  : "Corriente Continua (CC)"
+                                              }
                                               sx={{
                                                 height: 20,
                                                 fontSize: "0.65rem",
-                                                bgcolor: "#fde68a",
-                                                color: "#92400e",
+                                                bgcolor: "#e2e8f0",
                                               }}
                                             />
-                                          )}
-
-                                          {/* Soporte Tecnico: Si es 1, mostramos el chip */}
-                                          <Chip
-                                            size="small"
-                                            label={
-                                              motor.soporte_tec === 1
-                                                ? "Soporte Tecnico: Si"
-                                                : "Soporte Tecnico: No"
-                                            }
-                                            color="warning"
-                                            variant="outlined"
+                                          </Box>
+                                          <Box
                                             sx={{
-                                              height: 20,
-                                              fontSize: "0.65rem",
-                                              fontWeight: "bold",
+                                              display: "flex",
+                                              justifyContent: "center",
+                                              gap: 0.8,
+                                              flexWrap: "wrap",
+                                              mt: 0.5,
                                             }}
-                                          />
+                                          >
+                                            {/* Fases: 0 = Monofásico, 1 = Trifásico */}
+                                            <Chip
+                                              size="small"
+                                              label={
+                                                motor.mono_tri === 1
+                                                  ? `Trifásico (${motor.num_fases} Fases)`
+                                                  : `Monofásico (${motor.num_fases} Fases)`
+                                              }
+                                              sx={{
+                                                height: 20,
+                                                fontSize: "0.65rem",
+                                                bgcolor: "#e2e8f0",
+                                              }}
+                                            />
+                                          </Box>
+                                          <Box
+                                            sx={{
+                                              display: "flex",
+                                              gap: 0.8,
+                                              flexWrap: "wrap",
+                                              mt: 0.5,
+                                            }}
+                                          >
+                                            {/* Sincronismo: 0 = Asíncrono, 1 = Síncrono */}
+                                            <Chip
+                                              size="small"
+                                              label={
+                                                motor.asin_sin === 1
+                                                  ? "Síncrono"
+                                                  : "Asíncrono"
+                                              }
+                                              color="warning"
+                                              variant="outlined"
+                                              sx={{
+                                                height: 20,
+                                                fontSize: "0.65rem",
+                                                fontWeight: "bold",
+                                              }}
+                                            />
+
+                                            {/* Universal: Si es 1, mostramos el chip */}
+                                            {motor.universal === 1 && (
+                                              <Chip
+                                                size="small"
+                                                label="Universal"
+                                                sx={{
+                                                  height: 20,
+                                                  fontSize: "0.65rem",
+                                                  bgcolor: "#fde68a",
+                                                  color: "#92400e",
+                                                }}
+                                              />
+                                            )}
+
+                                            {/* Soporte Tecnico: Si es 1, mostramos el chip */}
+                                            <Chip
+                                              size="small"
+                                              label={
+                                                motor.soporte_tec === 1
+                                                  ? "Soporte Tecnico: Si"
+                                                  : "Soporte Tecnico: No"
+                                              }
+                                              color="warning"
+                                              variant="outlined"
+                                              sx={{
+                                                height: 20,
+                                                fontSize: "0.65rem",
+                                                fontWeight: "bold",
+                                              }}
+                                            />
+                                          </Box>
                                         </Box>
-                                      </Box>
-                                    ))
-                                  )}
-                                </CardContent>
-                              </Card>
-                            </Grid>
-                          ))}
-                        </Grid>
-                      )}
+                                      ))
+                                    )}
+                                  </CardContent>
+                                </Card>
+                              </Grid>
+                            ))}
+                          </Grid>
+                        )}
+                      </Grid>
                     </Grid>
-                  </Grid>
-                </AccordionDetails>
-              </Accordion>
-            </Box>
-          ))
+                  </AccordionDetails>
+                </Accordion>
+              </Box>
+            ))}
+          </>
         )}
 
         {/* 📦 3. EL MODAL COMPONENTE INDEPENDIENTE */}
