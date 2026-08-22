@@ -830,9 +830,20 @@ const GestionEstacion = () => {
       <Tabs
         value={tabIndex}
         onChange={handleTabChange}
+        variant="scrollable"
+        scrollButtons="auto"
+        allowScrollButtonsMobile
         indicatorColor="primary"
         textColor="primary"
-        sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}
+        sx={{
+          borderBottom: 1,
+          borderColor: "divider",
+          mb: 3,
+          maxWidth: "100%", // Evita que el contenedor rompa el ancho de la pantalla
+          "& .MuiTabs-scroller": {
+            overflowX: "auto", // Garantiza el desplazamiento fluido con el dedo en móviles
+          },
+        }}
       >
         <Tab
           icon={<AssignmentIcon />}

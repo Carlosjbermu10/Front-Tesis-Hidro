@@ -21,6 +21,8 @@ import {
   MenuItem,
   DialogActions,
   Tooltip,
+  Menu,
+  IconButton,
 } from "@mui/material";
 import {
   Visibility as ViewIcon,
@@ -31,6 +33,7 @@ import {
   RestoreFromTrash as ReactivarIcon,
   VisibilityOff as InactivaIcon,
 } from "@mui/icons-material";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Swal from "sweetalert2";
 import { estacionService } from "../../services/estacionService";
 
@@ -66,6 +69,21 @@ const Estaciones = () => {
   });
 
   const [submitting, setSubmitting] = useState(false);
+
+  // Estados para el Enfoque Híbrido (Menú de acciones secundarias)
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [menuEstacion, setMenuEstacion] = useState(null);
+  const openMenu = Boolean(anchorEl);
+
+  const handleMenuOpen = (event, estacion) => {
+    setAnchorEl(event.currentTarget);
+    setMenuEstacion(estacion);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setMenuEstacion(null);
+  };
 
   // 📥 Obtener Estaciones (Activas o Inactivas según parámetro)
   const cargarEstaciones = useCallback(
@@ -105,7 +123,7 @@ const Estaciones = () => {
         console.error("Error al parsear el usuario del localStorage:", err);
       }
 
-      await cargarEstaciones(false);
+      await cargarEstaciones();
     };
 
     inicializarPantalla();
@@ -348,7 +366,16 @@ const Estaciones = () => {
               : "Gestión de plantas de captación, líneas de conducción y sistemas técnicos."}
           </Typography>
         </Box>
-        <Box sx={{ display: "flex", gap: 1, ml: "auto" }}>
+        <Box
+          sx={{
+            display: "flex",
+            gap: 1,
+            ml: { xs: 0, sm: "auto" }, // Quita el margen izquierdo automático en móviles
+            width: { xs: "100%", sm: "auto" }, // Ocupa todo el ancho en móviles
+            flexWrap: { xs: "wrap", sm: "nowrap" }, // Permite que los botones bajen de línea si no caben
+            justifyContent: { xs: "center", sm: "flex-end" }, // Los centra en móviles
+          }}
+        >
           <Button
             variant="outlined"
             startIcon={<RefreshIcon />}
@@ -510,7 +537,15 @@ const Estaciones = () => {
               </Box>
             </Box>
           </DialogContent>
-          <DialogActions sx={{ p: 2.5, backgroundColor: "#ffffff", gap: 1.5 }}>
+          <DialogActions
+            sx={{
+              p: 2.5,
+              backgroundColor: "#ffffff",
+              gap: 1.5,
+              flexDirection: { xs: "column", sm: "row" }, // Columna en móviles, Fila en PC
+              "& > button": { width: { xs: "100%", sm: "auto" } }, // Botones al 100% solo en móvil
+            }}
+          >
             <Button
               onClick={() => setOpenModal(false)}
               disabled={submitting}
@@ -625,7 +660,15 @@ const Estaciones = () => {
               </Box>
             </Box>
           </DialogContent>
-          <DialogActions sx={{ p: 2.5, gap: 1 }}>
+          <DialogActions
+            sx={{
+              p: 2.5,
+              backgroundColor: "#ffffff",
+              gap: 1.5,
+              flexDirection: { xs: "column", sm: "row" }, // Columna en móviles, Fila en PC
+              "& > button": { width: { xs: "100%", sm: "auto" } }, // Botones al 100% solo en móvil
+            }}
+          >
             <Button
               onClick={() => setOpenEditModal(false)}
               color="inherit"
@@ -654,7 +697,9 @@ const Estaciones = () => {
           sx={{ boxShadow: 2, borderRadius: 2 }}
         >
           <Table sx={{ minWidth: 650 }} aria-label="tabla estaciones">
-            <TableHead sx={{ backgroundColor: "#f8fafc" }}>
+            <TableHead
+              sx={{ backgroundColor: "#f8fafc", whiteSpace: "nowrap" }}
+            >
               <TableRow>
                 <TableCell sx={{ fontWeight: "bold" }}>
                   Nombre de la Estación
@@ -745,7 +790,7 @@ const Estaciones = () => {
                           gap: 1.5,
                         }}
                       >
-                        {/* VISTA PARA ESTACIONES INACTIVAS */}
+                        {/* VISTA PARA ESTACIONES INACTIVAS (Se mantiene igual, es una sola acción) */}
                         {mostrarInactivas ? (
                           <>
                             {userRole === "admin" && (
@@ -766,18 +811,19 @@ const Estaciones = () => {
                                 sx={{
                                   textTransform: "none",
                                   fontWeight: 600,
-                                  px: 1.5,
-                                  py: 0.5,
                                   borderRadius: 1.5,
-                                  "&:hover": {
-                                    backgroundColor: "rgba(46, 125, 50, 0.08)",
-                                  },
                                 }}
                               >
-                                Reactivar
+                                <Box
+                                  component="span"
+                                  sx={{
+                                    display: { xs: "none", sm: "inline" },
+                                  }}
+                                >
+                                  Reactivar
+                                </Box>
                               </Button>
                             )}
-
                             {(userRole === "operador" ||
                               userRole === "supervisor") && (
                               <Tooltip
@@ -796,20 +842,25 @@ const Estaciones = () => {
                                     sx={{
                                       textTransform: "none",
                                       fontWeight: 500,
-                                      px: 1.5,
-                                      py: 0.5,
-                                      color: "text.disabled",
                                     }}
                                   >
-                                    Reactivar
+                                    <Box
+                                      component="span"
+                                      sx={{
+                                        display: { xs: "none", sm: "inline" },
+                                      }}
+                                    >
+                                      Reactivar
+                                    </Box>
                                   </Button>
                                 </span>
                               </Tooltip>
                             )}
                           </>
                         ) : (
-                          /* VISTA PARA ESTACIONES ACTIVAS */
+                          /* VISTA PARA ESTACIONES ACTIVAS (Enfoque Híbrido) */
                           <>
+                            {/* Acción Principal Visible */}
                             {(userRole === "admin" ||
                               userRole === "supervisor") && (
                               <Button
@@ -821,15 +872,18 @@ const Estaciones = () => {
                                   textTransform: "none",
                                   fontWeight: 600,
                                   color: "primary.main",
-                                  px: 1.5,
-                                  py: 0.5,
                                   borderRadius: 1.5,
                                   "&:hover": {
                                     backgroundColor: "rgba(25, 118, 210, 0.08)",
                                   },
                                 }}
                               >
-                                Gestionar
+                                <Box
+                                  component="span"
+                                  sx={{ display: { xs: "none", sm: "inline" } }}
+                                >
+                                  Gestionar
+                                </Box>
                               </Button>
                             )}
 
@@ -843,65 +897,27 @@ const Estaciones = () => {
                                 sx={{
                                   textTransform: "none",
                                   fontWeight: 600,
-                                  px: 1.5,
-                                  py: 0.5,
                                   borderRadius: 1.5,
-                                  "&:hover": {
-                                    backgroundColor: "rgba(25, 118, 210, 0.08)",
-                                  },
                                 }}
                               >
-                                Consultar
+                                <Box
+                                  component="span"
+                                  sx={{ display: { xs: "none", sm: "inline" } }}
+                                >
+                                  Consultar
+                                </Box>
                               </Button>
                             )}
 
+                            {/* Botón de opciones secundarias (solo para roles con permisos) */}
                             {(userRole === "admin" ||
                               userRole === "supervisor") && (
-                              <Button
-                                variant="text"
-                                color="info"
+                              <IconButton
                                 size="small"
-                                startIcon={<EditIcon sx={{ fontSize: 18 }} />}
-                                onClick={() => handleAbrirEditar(estacion)}
-                                sx={{
-                                  textTransform: "none",
-                                  fontWeight: 600,
-                                  borderRadius: 1.5,
-                                  px: 1.5,
-                                  py: 0.5,
-                                }}
+                                onClick={(e) => handleMenuOpen(e, estacion)}
                               >
-                                Modificar
-                              </Button>
-                            )}
-
-                            {/* Únicamente visible para el rol ADMIN */}
-                            {userRole === "admin" && (
-                              <Button
-                                variant="text"
-                                color="warning"
-                                size="small"
-                                startIcon={<DeleteIcon sx={{ fontSize: 18 }} />}
-                                disabled={loading}
-                                onClick={() =>
-                                  handleEliminar(
-                                    estacion.id_est,
-                                    estacion.nombre_est,
-                                  )
-                                }
-                                sx={{
-                                  textTransform: "none",
-                                  fontWeight: 600,
-                                  px: 1.5,
-                                  py: 0.5,
-                                  borderRadius: 1.5,
-                                  "&:hover": {
-                                    backgroundColor: "rgba(211, 47, 47, 0.08)",
-                                  },
-                                }}
-                              >
-                                Deshabilitar
-                              </Button>
+                                <MoreVertIcon fontSize="small" />
+                              </IconButton>
                             )}
                           </>
                         )}
@@ -914,6 +930,54 @@ const Estaciones = () => {
           </Table>
         </TableContainer>
       )}
+
+      {/* Menú Desplegable (Enfoque Híbrido) para acciones secundarias */}
+      <Menu
+        anchorEl={anchorEl}
+        open={openMenu}
+        onClose={handleMenuClose}
+        PaperProps={{
+          sx: {
+            mt: 0.5,
+            minWidth: 140,
+            boxShadow: "0px 4px 12px rgba(0,0,0,0.1)",
+            borderRadius: 2,
+          },
+        }}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+      >
+        {(userRole === "admin" || userRole === "supervisor") && (
+          <MenuItem
+            onClick={() => {
+              handleAbrirEditar(menuEstacion);
+              handleMenuClose();
+            }}
+            sx={{ fontSize: "0.875rem", fontWeight: 500 }}
+          >
+            <EditIcon sx={{ fontSize: 18, mr: 1.5, color: "info.main" }} />
+            Modificar
+          </MenuItem>
+        )}
+
+        {userRole === "admin" && (
+          <MenuItem
+            onClick={() => {
+              handleEliminar(menuEstacion.id_est, menuEstacion.nombre_est);
+              handleMenuClose();
+            }}
+            disabled={loading}
+            sx={{
+              fontSize: "0.875rem",
+              fontWeight: 500,
+              color: "warning.main",
+            }}
+          >
+            <DeleteIcon sx={{ fontSize: 18, mr: 1.5, color: "inherit" }} />
+            Deshabilitar
+          </MenuItem>
+        )}
+      </Menu>
     </Box>
   );
 };

@@ -988,12 +988,13 @@ const LineasBombeoTab = ({ idEstacion, userRole }) => {
                   <Button
                     variant="contained"
                     color="primary"
-                    startIcon={<AddIcon />} // Descomenta si usas el ícono de Material UI
+                    startIcon={<AddIcon />}
                     onClick={() => {
                       setModalLineaModo("add");
                       setLineaAEditar(null);
                       setModalLineaOpen(true);
                     }}
+                    sx={{ fontWeight: "bold" }}
                   >
                     Registrar Línea de Bombeo
                   </Button>
