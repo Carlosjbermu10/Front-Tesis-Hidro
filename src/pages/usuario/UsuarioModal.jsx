@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import {
   Dialog,
   DialogTitle,
@@ -10,14 +11,26 @@ import {
   MenuItem,
   IconButton,
   InputAdornment,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
 } from "@mui/material";
+
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+
 import Swal from "sweetalert2";
+
 import usuarioService from "../../services/usuarioService";
 
 export default function UsuarioModal({ open, onClose, onSuccess }) {
   const [submitting, setSubmitting] = useState(false);
+
+  // 1. Estado para controlar la visibilidad (Falso por defecto para que oculte la clave)
   const [showPassword, setShowPassword] = useState(false);
+
+  // 2. Funciones para cambiar el estado al hacer clic en el ojito
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleMouseDownPassword = (event) => event.preventDefault();
 
   const initialState = {
     nombre_completo: "",
@@ -33,32 +46,72 @@ export default function UsuarioModal({ open, onClose, onSuccess }) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-  const handleMouseDownPassword = (event) => event.preventDefault();
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       setSubmitting(true);
-      await usuarioService.addUsuario(formData);
+
+      // Guardamos la respuesta del backend en una variable
+
+      const response = await usuarioService.addUsuario(formData);
 
       Swal.fire({
         icon: "success",
-        title: "Usuario Registrado",
-        text: "El personal ha sido dado de alta exitosamente.",
-        timer: 2000,
+
+        title: "¡Registro Exitoso!",
+
+        // Usamos el mensaje de éxito del backend si existe, o uno por defecto
+
+        text:
+          response.data?.description ||
+          "El personal ha sido dado de alta exitosamente.",
+
+        timer: 2500,
+
         showConfirmButton: false,
       });
 
-      setFormData(initialState); // Limpiamos el formulario
-      onSuccess(); // Recargamos la tabla
-      onClose(); // Cerramos el modal
+      setFormData(initialState); // 1. Limpiamos el formulario
+
+      onSuccess(); // 2. Recargamos la tabla de fondo
+
+      onClose(); // 3. Cerramos el modal
     } catch (error) {
-      console.error(error);
+      console.error("Error en submit de usuario:", error);
+
+      // Capturamos EXACTAMENTE el mensaje de error que viene desde el backend
+
       const errorMsg =
         error.response?.data?.description ||
-        "No se pudo registrar el usuario. Verifique si el 'username' ya existe.";
-      Swal.fire("Error en el Registro", errorMsg, "error");
+        "No se pudo registrar el usuario. Hubo un error de comunicación con el servidor.";
+
+      // Mostramos la alerta configurada para el error
+
+      Swal.fire({
+        icon: "error",
+
+        title: "Error en el Registro",
+
+        text: errorMsg,
+
+        confirmButtonColor: "#d33",
+
+        confirmButtonText: "Entendido",
+
+        didOpen: () => {
+          const swalContainer = document.querySelector(".swal2-container");
+
+          if (swalContainer) swalContainer.style.zIndex = "9999";
+        },
+      });
+
+      // 🛑 NOTA IMPORTANTE PARA LA INTERFAZ:
+
+      // Como aquí NO llamamos a onClose() ni a setFormData(),
+
+      // la pantalla se queda estática. El modal NO se cierra y no se borra lo que
+
+      // el usuario ya había escrito. Podrá simplemente corregir el error y volver a intentar.
     } finally {
       setSubmitting(false);
     }
@@ -82,9 +135,11 @@ export default function UsuarioModal({ open, onClose, onSuccess }) {
         >
           Registrar Nuevo Usuario
         </DialogTitle>
+
         <DialogContent dividers sx={{ p: 3 }}>
           <Grid container spacing={3}>
-            <Grid item xs={12}>
+            {/* Fila 1: Nombres */}
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="Nombre Completo"
@@ -108,6 +163,7 @@ export default function UsuarioModal({ open, onClose, onSuccess }) {
               />
             </Grid>
 
+            {/* Fila 2: Rol y Contraseña */}
             <Grid item xs={12} sm={6}>
               <TextField
                 select
@@ -127,19 +183,22 @@ export default function UsuarioModal({ open, onClose, onSuccess }) {
               </TextField>
             </Grid>
 
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Contraseña Temporal"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                value={formData.password}
-                onChange={handleChange}
-                required
-                InputProps={{
-                  endAdornment: (
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth required variant="outlined">
+                <InputLabel htmlFor="password-temporal">
+                  Contraseña Temporal
+                </InputLabel>
+                <OutlinedInput
+                  id="password-temporal"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Mínimo 8 caracteres"
+                  endAdornment={
                     <InputAdornment position="end">
                       <IconButton
+                        aria-label="toggle password visibility"
                         onClick={handleClickShowPassword}
                         onMouseDown={handleMouseDownPassword}
                         edge="end"
@@ -147,16 +206,19 @@ export default function UsuarioModal({ open, onClose, onSuccess }) {
                         {showPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
                     </InputAdornment>
-                  ),
-                }}
-              />
+                  }
+                  label="Contraseña Temporal"
+                />
+              </FormControl>
             </Grid>
           </Grid>
         </DialogContent>
+
         <DialogActions sx={{ px: 3, py: 2, bgcolor: "#f8fafc" }}>
           <Button onClick={handleClose} color="inherit" disabled={submitting}>
             Cancelar
           </Button>
+
           <Button
             type="submit"
             variant="contained"

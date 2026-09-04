@@ -12,6 +12,13 @@ const usuarioService = {
     const response = await API.post("/auth/register", userData);
     return response.data;
   },
+
+  // 🔄 PUT: Cambiar el estado (activo/inactivo) de un usuario (Estricto: Solo Admin)
+  toggleEstadoUsuario: async (id_usuario, data) => {
+    // data recibe un objeto como este: { estado: 0 } o { estado: 1 }
+    const response = await API.put(`/auth/usuarios/${id_usuario}/estado`, data);
+    return response.data;
+  },
 };
 
 export default usuarioService;

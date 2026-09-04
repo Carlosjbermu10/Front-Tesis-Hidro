@@ -2,6 +2,7 @@ import logoMinaguas from "../../assets/logo_minaguas.png";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../../services/authService";
+import Swal from "sweetalert2";
 import {
   Container,
   Box,
@@ -55,10 +56,22 @@ const Login = () => {
       navigate("/dashboard");
     } catch (err) {
       console.error(err);
-      // Captura el mensaje de error que mande tu backend, o muestra uno genérico
+
+      // Capturamos la propiedad "description" exacta que manda tu Node.js
       const mensajeError =
-        err.response?.data?.message || "Usuario o contraseña incorrectos.";
+        err.response?.data?.description || "Usuario o contraseña incorrectos.";
+
+      // Mantenemos el error en pantalla por si acaso
       setError(mensajeError);
+
+      // Disparamos el SweetAlert con el mensaje del backend
+      Swal.fire({
+        icon: "error",
+        title: "Acceso Denegado",
+        text: mensajeError,
+        confirmButtonColor: "#1976d2", // Azul acorde a MUI y Minaguas
+        confirmButtonText: "Entendido",
+      });
     }
   };
 
