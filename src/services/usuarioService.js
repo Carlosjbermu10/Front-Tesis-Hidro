@@ -19,6 +19,21 @@ const usuarioService = {
     const response = await API.put(`/auth/usuarios/${id_usuario}/estado`, data);
     return response.data;
   },
+
+  // 🔑 PUT: Restablecer contraseña de un usuario por parte del Admin
+  resetPasswordUsuario: async (id_usuario) => {
+    const response = await API.put(
+      `/auth/usuarios/${id_usuario}/reset-password`,
+    );
+    return response.data;
+  },
+
+  // 🔐 PUT: Cambiar contraseña personal del usuario logueado
+  cambiarPasswordPersonal: async (data) => {
+    // data recibe: { passwordActual: "...", passwordNueva: "..." }
+    const response = await API.put("/auth/perfil/cambiar-password", data);
+    return response.data;
+  },
 };
 
 export default usuarioService;

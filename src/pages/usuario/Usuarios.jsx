@@ -14,9 +14,12 @@ import {
   CircularProgress,
   Button,
   Switch,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import PersonIcon from "@mui/icons-material/Person";
+import LockResetIcon from "@mui/icons-material/LockReset";
 import Swal from "sweetalert2";
 import usuarioService from "../../services/usuarioService";
 import UsuarioModal from "./UsuarioModal";
@@ -72,6 +75,17 @@ export default function Usuarios() {
     return false;
   };
 
+  // 🧠 LÓGICA: Determina si el botón de resetear clave debe estar bloqueado
+  const isResetDisabled = (row) => {
+    // 1. Si no eres admin, no puedes resetear nada
+    if (userData?.rol !== "admin") return true;
+
+    // 2. REGLA ESTRICTA: Nadie puede resetear la clave de un "admin" desde esta tabla
+    if (row.rol === "admin") return true;
+
+    return false;
+  };
+
   // 🚀 ACCIÓN: Función que se ejecuta al hacer clic en el Switch
   const handleToggleEstatus = async (userFila) => {
     const isActivo = userFila.estado === 1;
@@ -84,13 +98,19 @@ export default function Usuarios() {
 
     // Pedimos confirmación antes de disparar al backend
     const confirmacion = await Swal.fire({
-      title: `¿Estás seguro?`,
-      text: `Vas a ${accionTxt} el acceso de ${userFila.nombre_completo}.`,
+      title: isSelfDeactivation
+        ? "¡Cuidado! Se cerrará tu sesión"
+        : `¿Estás seguro?`,
+      text: isSelfDeactivation
+        ? "Estás a punto de inhabilitar tu propia cuenta. Si continúas, tu sesión se cerrará automáticamente por seguridad y no podrás volver a entrar."
+        : `Vas a ${accionTxt} el acceso de ${userFila.nombre_completo}.`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: isActivo ? "#d33" : "#10b981", // Rojo para desactivar, verde para activar
       cancelButtonColor: "#64748b",
-      confirmButtonText: `Sí, ${accionTxt}`,
+      confirmButtonText: isSelfDeactivation
+        ? "Sí, inhabilitar y salir"
+        : `Sí, ${accionTxt}`,
       cancelButtonText: "Cancelar",
     });
 
@@ -137,6 +157,50 @@ export default function Usuarios() {
           icon: "error",
           title: "Acción denegada",
           text: mensajeError, // Se mostrará exactamente por qué falló
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  // 🚀 Restablecer Contraseña
+  const handleResetPassword = async (userFila) => {
+    const confirmacion = await Swal.fire({
+      title: "¿Restablecer Contraseña?",
+      text: `Se generará una nueva clave temporal para ${userFila.nombre_completo}.`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#1976d2",
+      cancelButtonColor: "#64748b",
+      confirmButtonText: "Sí, restablecer",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (confirmacion.isConfirmed) {
+      try {
+        setLoading(true);
+        // Llamamos al nuevo endpoint del backend
+        const res = await usuarioService.resetPasswordUsuario(
+          userFila.id_usuario,
+        );
+
+        // Mostramos la clave generada en pantalla grande
+        Swal.fire({
+          icon: "success",
+          title: "¡Contraseña Restablecida!",
+          html: `La nueva contraseña de acceso es:<br><br><strong style="font-size: 1.8em; color: #d33; letter-spacing: 2px;">${res.nuevaClave}</strong><br><br>Cópiala y entrégasela al usuario de inmediato.`,
+          confirmButtonText: "Entendido",
+        });
+      } catch (error) {
+        console.error("Error reseteando clave:", error);
+        const mensajeError =
+          error.response?.data?.description ||
+          "Hubo un problema al restablecer la contraseña.";
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: mensajeError,
         });
       } finally {
         setLoading(false);
@@ -218,62 +282,122 @@ export default function Usuarios() {
               <TableCell sx={{ fontWeight: "bold" }}>
                 Fecha de Registro
               </TableCell>
+              {/* 🔒 SOLO SE RENDERIZA SI ES ADMIN */}
+              {userData?.rol === "admin" && (
+                <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>
+                  Acciones
+                </TableCell>
+              )}
             </TableRow>
           </TableHead>
           <TableBody>
-            {usuarios.map((user) => (
-              <TableRow
-                key={user.id_usuario}
-                sx={{
-                  "&:last-child td, &:last-child th": { border: 0 },
-                  "&:hover": { bgcolor: "#f8fafc" },
-                }}
-              >
-                <TableCell component="th" scope="row" fontWeight="medium">
-                  {user.nombre_completo}
-                </TableCell>
-                <TableCell>{user.username}</TableCell>
-                <TableCell>
-                  <Chip
-                    label={user.rol?.toUpperCase()}
-                    color={
-                      user.rol === "admin"
-                        ? "error"
-                        : user.rol === "supervisor"
-                          ? "warning"
-                          : "primary"
-                    }
-                    size="small"
-                    sx={{ fontWeight: "bold" }}
-                  />
-                </TableCell>
-                <TableCell>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            {usuarios.map((user) => {
+              // 🧠 Detectamos si esta fila pertenece a la persona que tiene la sesión abierta
+              const isCurrentUser = user.username === userData.username;
+
+              return (
+                <TableRow
+                  key={user.id_usuario}
+                  sx={{
+                    "&:last-child td, &:last-child th": { border: 0 },
+                    // Si es el usuario actual, le damos un fondo azul muy sutil, si no, efecto hover normal
+                    bgcolor: isCurrentUser ? "#e0f2fe" : "inherit",
+                    "&:hover": {
+                      bgcolor: isCurrentUser ? "#bae6fd" : "#f8fafc",
+                    },
+                  }}
+                >
+                  <TableCell component="th" scope="row" fontWeight="medium">
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      {user.nombre_completo}
+                      {/* 🌟 Etiqueta visual para identificar tu propia cuenta */}
+                      {isCurrentUser && (
+                        <Chip
+                          label="Tú"
+                          color="primary"
+                          size="small"
+                          sx={{
+                            height: 20,
+                            fontSize: "0.7rem",
+                            fontWeight: "bold",
+                          }}
+                        />
+                      )}
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Typography
+                      variant="body2"
+                      fontWeight={isCurrentUser ? "bold" : "normal"}
+                      color={isCurrentUser ? "primary.main" : "text.primary"}
+                    >
+                      {user.username}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
                     <Chip
-                      label={user.estado === 1 ? "Activo" : "Inactivo"}
-                      color={user.estado === 1 ? "success" : "error"}
-                      variant={user.estado === 1 ? "outlined" : "filled"}
+                      label={user.rol?.toUpperCase()}
+                      color={
+                        user.rol === "admin"
+                          ? "error"
+                          : user.rol === "supervisor"
+                            ? "warning"
+                            : "primary"
+                      }
                       size="small"
-                      sx={{ fontWeight: "bold", width: "75px" }} // width fijo para que no salte al cambiar texto
+                      sx={{ fontWeight: "bold" }}
                     />
-                    <Switch
-                      checked={user.estado === 1}
-                      onChange={() => handleToggleEstatus(user)}
-                      disabled={isActionDisabled(user)}
-                      color={user.estado === 1 ? "success" : "default"}
-                      size="small"
-                    />
-                  </Box>
-                </TableCell>
-                <TableCell color="text.secondary">
-                  {new Date(user.created_at).toLocaleDateString("es-VE", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </TableCell>
-              </TableRow>
-            ))}
+                  </TableCell>
+                  <TableCell>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <Chip
+                        label={user.estado === 1 ? "Activo" : "Inactivo"}
+                        color={user.estado === 1 ? "success" : "error"}
+                        variant={user.estado === 1 ? "outlined" : "filled"}
+                        size="small"
+                        sx={{ fontWeight: "bold", width: "75px" }}
+                      />
+                      <Switch
+                        checked={user.estado === 1}
+                        onChange={() => handleToggleEstatus(user)}
+                        disabled={isActionDisabled(user)}
+                        color={user.estado === 1 ? "success" : "default"}
+                        size="small"
+                      />
+                    </Box>
+                  </TableCell>
+                  <TableCell color="text.secondary">
+                    {new Date(user.created_at).toLocaleDateString("es-VE", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </TableCell>
+                  {/* NUEVA CELDA DE ACCIONES CON EL BOTÓN (OCULTA PARA SUPERVISORES) */}
+                  {userData?.rol === "admin" && (
+                    <TableCell align="center">
+                      <Tooltip
+                        title={
+                          isResetDisabled(user)
+                            ? "No permitido para este rol"
+                            : "Restablecer Contraseña"
+                        }
+                      >
+                        <span>
+                          <IconButton
+                            color="primary"
+                            onClick={() => handleResetPassword(user)}
+                            disabled={isResetDisabled(user)}
+                          >
+                            <LockResetIcon />
+                          </IconButton>
+                        </span>
+                      </Tooltip>
+                    </TableCell>
+                  )}
+                </TableRow>
+              );
+            })}
             {usuarios.length === 0 && (
               <TableRow>
                 <TableCell

@@ -1,5 +1,9 @@
 import logoHidrocaribe from "../assets/logo_gobierno1.png";
 import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { authService } from "../services/authService";
+import usuarioService from "../services/usuarioService";
+import Swal from "sweetalert2";
 import {
   Box,
   Drawer,
@@ -14,6 +18,14 @@ import {
   ListItemIcon,
   ListItemText,
   Button,
+  Menu,
+  MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  InputAdornment,
 } from "@mui/material";
 import {
   Dashboard as DashboardIcon,
@@ -22,12 +34,14 @@ import {
   ExitToApp as LogoutIcon,
   Menu as MenuIcon,
   Group as UsuariosIcon,
+  ArrowDropDown as ArrowDropDownIcon,
+  VpnKey as VpnKeyIcon,
+  Visibility,
+  VisibilityOff,
 } from "@mui/icons-material";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import EngineeringIcon from "@mui/icons-material/Engineering";
 import { Map as MapIcon } from "@mui/icons-material";
-import { useNavigate, useLocation } from "react-router-dom";
-import { authService } from "../services/authService";
 
 const drawerWidth = 260;
 
@@ -40,6 +54,84 @@ const MainLayout = ({ children }) => {
   const storedUser = localStorage.getItem("user");
   const userData =
     storedUser && storedUser !== "undefined" ? JSON.parse(storedUser) : {};
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [openPwdModal, setOpenPwdModal] = useState(false);
+  const [showPwd, setShowPwd] = useState(false);
+  const [pwdData, setPwdData] = useState({
+    actual: "",
+    nueva: "",
+    confirmar: "",
+  });
+  const [pwdLoading, setPwdLoading] = useState(false);
+
+  // Manejadores del Menú superior
+  const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
+  const handleMenuClose = () => setAnchorEl(null);
+
+  // Manejadores del Modal de Contraseña
+  const handlePwdChange = (e) => {
+    setPwdData({ ...pwdData, [e.target.name]: e.target.value });
+  };
+
+  const handleCloseModal = () => {
+    setOpenPwdModal(false);
+    setPwdData({ actual: "", nueva: "", confirmar: "" }); // Limpiamos al cerrar
+    setShowPwd(false);
+  };
+
+  const handleSubmitPassword = async (e) => {
+    e.preventDefault();
+
+    // 1. Validación en el frontend: que las nuevas contraseñas coincidan
+    if (pwdData.nueva !== pwdData.confirmar) {
+      Swal.fire({
+        icon: "error",
+        title: "Error de validación",
+        text: "La nueva contraseña y la confirmación no coinciden.",
+        didOpen: () => {
+          const swalContainer = document.querySelector(".swal2-container");
+          if (swalContainer) swalContainer.style.zIndex = "9999";
+        },
+      });
+      return;
+    }
+
+    try {
+      setPwdLoading(true);
+      // 2. Disparamos al backend
+      await usuarioService.cambiarPasswordPersonal({
+        passwordActual: pwdData.actual,
+        passwordNueva: pwdData.nueva,
+      });
+
+      // 3. Éxito
+      Swal.fire({
+        icon: "success",
+        title: "¡Contraseña Actualizada!",
+        text: "Tu clave de acceso ha sido cambiada exitosamente.",
+        timer: 2500,
+        showConfirmButton: false,
+      });
+      handleCloseModal();
+    } catch (error) {
+      console.error("Error cambiando contraseña:", error);
+      const mensajeError =
+        error.response?.data?.description ||
+        "Hubo un problema al actualizar tu contraseña.";
+      Swal.fire({
+        icon: "error",
+        title: "No se pudo cambiar",
+        text: mensajeError,
+        didOpen: () => {
+          const swalContainer = document.querySelector(".swal2-container");
+          if (swalContainer) swalContainer.style.zIndex = "9999";
+        },
+      });
+    } finally {
+      setPwdLoading(false);
+    }
+  };
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -215,19 +307,48 @@ const MainLayout = ({ children }) => {
               "Panel de Control"}
           </Typography>
 
-          {/* 👤 NOMBRE COMPLETO DINÁMICO */}
+          {/* 👤 MENÚ DESPLEGABLE DEL USUARIO */}
           {userData.nombre_completo && (
-            <Typography
-              variant="body2"
-              sx={{
-                mr: 2,
-                fontWeight: "bold",
-                color: "#475569",
-                display: { xs: "none", sm: "block" },
-              }}
-            >
-              {userData.nombre_completo}
-            </Typography>
+            <>
+              <Button
+                onClick={handleMenuOpen}
+                sx={{
+                  textTransform: "none",
+                  color: "#475569",
+                  fontWeight: "bold",
+                  display: { xs: "none", sm: "flex" },
+                  alignItems: "center",
+                  mr: 2,
+                }}
+              >
+                {userData.nombre_completo}
+                <ArrowDropDownIcon />
+              </Button>
+
+              {/* Contenido del Menú Desplegable */}
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                transformOrigin={{ vertical: "top", horizontal: "right" }}
+                PaperProps={{ elevation: 3, sx: { mt: 1, minWidth: 200 } }}
+              >
+                <MenuItem
+                  onClick={() => {
+                    handleMenuClose();
+                    setOpenPwdModal(true);
+                  }}
+                >
+                  <ListItemIcon>
+                    <VpnKeyIcon fontSize="small" color="primary" />
+                  </ListItemIcon>
+                  <Typography variant="body2" fontWeight="medium">
+                    Cambiar Contraseña
+                  </Typography>
+                </MenuItem>
+              </Menu>
+            </>
           )}
 
           {/* 🔴 Logout en el Header */}
@@ -291,6 +412,94 @@ const MainLayout = ({ children }) => {
       >
         {children}
       </Box>
+
+      {/* 🌟 MODAL: CAMBIAR CONTRASEÑA */}
+      <Dialog
+        open={openPwdModal}
+        onClose={handleCloseModal}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle
+          sx={{
+            fontWeight: "bold",
+            color: "#005088",
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+          }}
+        >
+          <VpnKeyIcon /> Seguridad de Cuenta
+        </DialogTitle>
+
+        <Box component="form" onSubmit={handleSubmitPassword}>
+          <DialogContent dividers>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              Por favor, ingresa tu contraseña actual para verificar tu
+              identidad y luego escribe tu nueva clave de acceso.
+            </Typography>
+
+            <TextField
+              fullWidth
+              label="Contraseña Actual"
+              name="actual"
+              type={showPwd ? "text" : "password"}
+              value={pwdData.actual}
+              onChange={handlePwdChange}
+              required
+              margin="dense"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={() => setShowPwd(!showPwd)} edge="end">
+                      {showPwd ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <TextField
+              fullWidth
+              label="Nueva Contraseña"
+              name="nueva"
+              type={showPwd ? "text" : "password"}
+              value={pwdData.nueva}
+              onChange={handlePwdChange}
+              required
+              margin="dense"
+              sx={{ mt: 2 }}
+            />
+            <TextField
+              fullWidth
+              label="Confirmar Nueva Contraseña"
+              name="confirmar"
+              type={showPwd ? "text" : "password"}
+              value={pwdData.confirmar}
+              onChange={handlePwdChange}
+              required
+              margin="dense"
+              sx={{ mt: 2 }}
+            />
+          </DialogContent>
+          <DialogActions sx={{ p: 2, bgcolor: "#f8fafc" }}>
+            <Button
+              onClick={handleCloseModal}
+              color="inherit"
+              disabled={pwdLoading}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              disabled={pwdLoading}
+            >
+              {pwdLoading ? "Guardando..." : "Guardar Cambios"}
+            </Button>
+          </DialogActions>
+        </Box>
+      </Dialog>
     </Box>
   );
 };
