@@ -21,28 +21,27 @@ export default function Bitacora() {
   const [eventos, setEventos] = useState([]);
   const [cargando, setCargando] = useState(true);
 
-  // Efecto para cargar los datos apenas se abra la pantalla
   useEffect(() => {
+    const cargarHistorial = async () => {
+      try {
+        setCargando(true);
+        const data = await dashboardService.obtenerBitacora();
+        setEventos(data);
+      } catch (error) {
+        console.log(error);
+        Swal.fire({
+          icon: "error",
+          title: "Error de conexión",
+          text: "No se pudo cargar el historial de operaciones.",
+          confirmButtonColor: "#3085d6",
+        });
+      } finally {
+        setCargando(false);
+      }
+    };
+
     cargarHistorial();
   }, []);
-
-  const cargarHistorial = async () => {
-    try {
-      setCargando(true);
-      const data = await dashboardService.obtenerBitacora();
-      setEventos(data);
-    } catch (error) {
-      console.log(error);
-      Swal.fire({
-        icon: "error",
-        title: "Error de conexión",
-        text: "No se pudo cargar el historial de operaciones.",
-        confirmButtonColor: "#3085d6",
-      });
-    } finally {
-      setCargando(false);
-    }
-  };
 
   // 🎨 Función para darle un color visual a la acción
   const getColorAccion = (accion) => {
