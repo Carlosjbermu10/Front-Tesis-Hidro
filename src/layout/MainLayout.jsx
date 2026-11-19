@@ -448,16 +448,24 @@ const MainLayout = ({ children }) => {
               onChange={handlePwdChange}
               required
               margin="dense"
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton onClick={() => setShowPwd(!showPwd)} edge="end">
-                      {showPwd ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="alternar visibilidad de contraseña"
+                        onClick={() => setShowPwd((prev) => !prev)}
+                        onMouseDown={(e) => e.preventDefault()}
+                        edge="end"
+                      >
+                        {showPwd ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                },
               }}
             />
+
             <TextField
               fullWidth
               label="Nueva Contraseña"
@@ -468,7 +476,24 @@ const MainLayout = ({ children }) => {
               required
               margin="dense"
               sx={{ mt: 2 }}
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="alternar visibilidad de contraseña"
+                        onClick={() => setShowPwd((prev) => !prev)}
+                        onMouseDown={(e) => e.preventDefault()}
+                        edge="end"
+                      >
+                        {showPwd ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                },
+              }}
             />
+
             <TextField
               fullWidth
               label="Confirmar Nueva Contraseña"
@@ -479,8 +504,25 @@ const MainLayout = ({ children }) => {
               required
               margin="dense"
               sx={{ mt: 2 }}
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="alternar visibilidad de contraseña"
+                        onClick={() => setShowPwd((prev) => !prev)}
+                        onMouseDown={(e) => e.preventDefault()}
+                        edge="end"
+                      >
+                        {showPwd ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                },
+              }}
             />
           </DialogContent>
+
           <DialogActions sx={{ p: 2, bgcolor: "#f8fafc" }}>
             <Button
               onClick={handleCloseModal}
